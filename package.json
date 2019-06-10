@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "cuid": "^2.1.6",
+    "normalize.css": "^8.0.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-router": "^5.0.1",

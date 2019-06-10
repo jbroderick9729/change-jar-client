@@ -11,7 +11,7 @@ export default class Categories extends Component {
 
         const categoriesList = newCategories.map(category => {
             return (
-                <li key={category.id} value={category.name}>
+                <li key={category.id} value={this.props.newCategory.name}>
                     {category.name}
                 </li>
             );
@@ -29,7 +29,7 @@ export default class Categories extends Component {
                             type="text"
                             placeholder="Mortgage, Rent, Groceries ..."
                             onChange={e => this.props.enterCategory(e.target.value)}
-                            value={this.props.newCategory}
+                            value={this.props.newCategory.name}
                         />
                     </label>
                     <input type="submit" value="Enter" />

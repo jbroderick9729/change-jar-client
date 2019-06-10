@@ -10,13 +10,14 @@ export default class Expenses extends Component {
     render() {
         const expenseItems = this.props.expenses.map((expense, i) => (
             <li key={i}>{`${expense.amount} | ${expense.description}`}</li>
-        ));
-
+        ))
+        const date = new Date()
         return (
             <section >
                 <div>
                     <header>
                         <h2>Expenses</h2>
+                        <h3>{date.toDateString()}</h3>
                     </header>
                     <form onSubmit={e => this.props.submitExpense(e)}>
                         <label>
