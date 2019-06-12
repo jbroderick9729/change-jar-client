@@ -18,6 +18,7 @@ class App extends Component {
     newIncome: "",
     income: "",
     currentBudget: [{ id: 1, amount: "500" }],
+    budgets: [{ id: 1, name: '2019_06', category_id: 1, created: '2019_06_2019' }],
     newCategoryEntry: {}
   };
 
@@ -79,7 +80,6 @@ class App extends Component {
     this.setState({
       newCategoryEntry
     })
-
   }
 
   handleSubmitCategoryAmount = (e) => {
@@ -90,25 +90,46 @@ class App extends Component {
     })
   }
 
-
   render() {
     const { categories, expenses } = this.state
     return (
       <div className="App">
         <Router>
-          <header className="main-header">
+          <header>
             <Link to='/'><h1>Change Jar</h1></Link>
-            <Link to='/'><button>Log in</button></Link>
-            <Link to='/'><button>Register</button></Link>
           </header>
-          <Sidebar />
-          <main>
-            <Route exact path='/' render={() =>
-              <Expenses enterExpenseDescription={this.handleEnterExpenseDescription} enterExpenseAmount={this.handleEnterExpenseAmount} submitExpense={this.handleSubmitExpense} expenses={expenses} newExpenseAmount={this.state.newExpenseAmount} newExpenseDescription={this.state.newExpenseDescription} />} />
-            <Route path='/manage-categories' render={() => <Categories enterCategory={this.handleEnterCategory} submitCategory={this.handleSubmitCategory} categories={categories} newCategory={this.state.newCategory} />} />
-            <Route exact path='/budget' render={() =>
-              <CurrentMonthBudget categories={categories} income={this.state.income} newIncome={this.state.newIncome} submitIncome={this.handleSubmitIncome} enterIncome={this.handleEnterIncome} enterCategoryAmount={this.handleEnterCategoryAmount} submitCategoryAmount={this.handleSubmitCategoryAmount} currentBudget={this.state.currentBudget} />} />
-          </main>
+          <div className='container'>
+            <Sidebar />
+            <main>
+              <Route exact path='/' render={() =>
+                <Expenses
+                  enterExpenseDescription={this.handleEnterExpenseDescription}
+                  enterExpenseAmount={this.handleEnterExpenseAmount}
+                  submitExpense={this.handleSubmitExpense}
+                  expenses={expenses}
+                  newExpenseAmount={this.state.newExpenseAmount}
+                  newExpenseDescription={this.state.newExpenseDescription} />
+              } />
+              <Route path='/manage-categories' render={() =>
+                <Categories
+                  enterCategory={this.handleEnterCategory}
+                  submitCategory={this.handleSubmitCategory}
+                  categories={categories}
+                  newCategory={this.state.newCategory} />
+              } />
+              <Route exact path='/budget' render={() =>
+                <CurrentMonthBudget
+                  categories={categories}
+                  income={this.state.income}
+                  newIncome={this.state.newIncome}
+                  submitIncome={this.handleSubmitIncome}
+                  enterIncome={this.handleEnterIncome}
+                  enterCategoryAmount={this.handleEnterCategoryAmount}
+                  submitCategoryAmount={this.handleSubmitCategoryAmount}
+                  currentBudget={this.state.currentBudget} />
+              } />
+            </main>
+          </div>
         </Router>
       </div>
     );

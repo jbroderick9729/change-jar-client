@@ -1,4 +1,5 @@
 import React, { Component } from "react"
+import './CurrentMonthBudget.css'
 
 export default class CurrentMonthBudget extends Component {
     static defaultProps = {
