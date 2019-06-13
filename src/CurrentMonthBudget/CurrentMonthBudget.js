@@ -10,7 +10,7 @@ export default class CurrentMonthBudget extends Component {
 
     state = {
         currentBudget: [
-            { category_id: 2, category_name: 'Groceries', amount: '60' }
+            { category_id: 1, category_name: 'Mortgage', amount: '500', created_at: new Date(June 13 2019), modified_at: new Date(June 13 2019)}
         ],
         newCategoryBudget: {}
     }
@@ -27,9 +27,10 @@ export default class CurrentMonthBudget extends Component {
         e.preventDefault()
         const { currentBudget, newCategoryBudget } = this.state
         const omittedChangedCategory = currentBudget.filter(cat => cat.category_id !== newCategoryBudget.category_id)
-        const newBudget = [omittedChangedCategory, { ...currentBudget }]
+        const newBudget = [{...omittedChangedCategory}, newCategoryBudget]
         this.setState({
             currentBudget: newBudget
+            newCategoryBudget: {}
         })
     }
 
@@ -41,7 +42,7 @@ export default class CurrentMonthBudget extends Component {
                 {...cat}
             />
         ))
-        const budgeted = this.state.currentBudget.reduce((a, b) => a.amount = b.amount)
+        const budgeted = this.state.currentBudget.reduce((a, b) => a + b.amount)
         const left = this.props.income - budgeted
 
         return (
@@ -50,13 +51,15 @@ export default class CurrentMonthBudget extends Component {
                 <form onSubmit={e => this.props.submitIncome(e)}>
                     <label>
                         How much money will you make this month?
-            <input
+                        <input
                             type="text"
                             onChange={e => this.props.enterIncome(e.target.value)}
+                            value={this.state.newCategoryBudget.amount}
                         />
                     </label>
                     <button type="submit">Submit</button>
                 </form>
+                <hr />
                 <h2>Your Budget Categories</h2>
                 <h3>{`Amount Budgeted: ${budgeted} | Amount Left to Budget: ${left}`}</h3>
                 <ul>{displayCategories}</ul>
