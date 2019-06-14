@@ -14,24 +14,25 @@ class App extends Component {
     newExpenseDescription: '',
     newExpenseAmount: '',
     newExpenseDate: '',
+    newExpenseCategory: ''
     expenses: [],
     newIncome: '',
     income: '',
     currentBudget: {
       budget_id: 1,
-      budget_name: "June 2019",
-      created_at: new Date("June 01 2019"),
-      last_modified: new Date("June 01 2019"),
+      budget_name: 'June 2019',
+      created_at: new Date('June 01 2019'),
+      last_modified: new Date('June 01 2019'),
       categories: [
         {
           category_id: 1,
-          category_name: "Mortgage",
+          category_name: 'Mortgage',
           amountBudgeted: 600,
-          amountSpent: 600,
+          amountSpent: 600
         }
-      ],
+      ]
     },
-    newCategoryEntry: ""
+    newCategoryEntry: ''
   }
 
   handleEnterCategory = newCategoryEntry => {
@@ -48,7 +49,7 @@ class App extends Component {
       category_id,
       category_name: this.state.newCategoryEntry,
       amountBudgeted: 0,
-      amountSpent: 0,
+      amountSpent: 0
     }
     const newCats = [...currentCats, newCat]
     const newBudget = { ...this.state.currentBudget }
@@ -76,6 +77,12 @@ class App extends Component {
     })
   }
 
+  handleSelectExpenseCategory = newExpenseCategory => {
+    this.setState({
+      newExpenseCategory
+    })
+  }
+
   handleSubmitExpense = event => {
     event.preventDefault()
     const expense_id = cuid()
@@ -84,16 +91,25 @@ class App extends Component {
       date: this.state.newExpenseDate,
       description: this.state.newExpenseDescription,
       amount: this.state.newExpenseAmount,
+      category: this.state.newExpenseCategory
       created_at: Date.now(),
-      last_modified: Date.now(),
+      last_modified: Date.now()
     }
     this.setState({
       expenses: [...this.state.expenses, newExpense],
       newExpenseAmount: '',
       newExpenseDescription: '',
       newExpenseDate: ''
-    })
+    }, () => this.updateBudgetWithExpenses)
   }
+  
+  updateBudgetWithExpenses = () => {
+    //can either set new expense in expenses in state but also
+    // find that budget cat in budget and update there to
+    // or
+    // have a func that iterates through all expenses, retotal,
+  }// then a func that updates budget based on all expenses
+
 
   handleEnterIncome = newIncome => {
     this.setState({
@@ -154,10 +170,12 @@ class App extends Component {
                     enterExpenseDate={this.handleEnterExpenseDate}
                     enterExpenseDescription={this.handleEnterExpenseDescription}
                     enterExpenseAmount={this.handleEnterExpenseAmount}
+                    selectExpenseCategory={this.handleSelectExpenseCategory}
                     submitExpense={this.handleSubmitExpense}
                     expenses={this.state.expenses}
                     newExpenseAmount={this.state.newExpenseAmount}
                     newExpenseDescription={this.state.newExpenseDescription}
+                    categories={this.state.currentBudget.categories}
                   />
                 )}
               />

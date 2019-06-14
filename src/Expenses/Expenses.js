@@ -47,6 +47,15 @@ export default class Expenses extends Component {
                 value={this.props.newExpenseAmount}
               />
             </label>
+            <label>Category: 
+              <select>
+                {this.props.categories.map(cat => 
+                  <option 
+                      key={cat.category_id} 
+                      id={cat.category_id}>{cat.category_name}</option>)
+                      onChange={e => this.props.selectExpenseCategory(e.target.value)}
+              </select>
+            </label>
             <input type="submit" value="Enter" />
           </form>
           <hr />
