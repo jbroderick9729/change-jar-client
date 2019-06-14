@@ -1,18 +1,11 @@
 import React, { Component } from 'react'
-import './CurrentMonthBudget.css'
+import './EditBudget.css'
 import { BudgetCategory } from '../BudgetCategory/BudgetCategory'
 
-export default class CurrentMonthBudget extends Component {
+export default class EditBudget extends Component {
     static defaultProps = {
         categories: [],
         currentBudget: []
-    }
-
-    state = {
-        currentBudget: [
-            { category_id: 1, category_name: 'Mortgage', amount: '500', created_at: new Date(June 13 2019), modified_at: new Date(June 13 2019)}
-        ],
-        newCategoryBudget: {}
     }
 
     handleCategoryAmount(amount, id) {
@@ -27,15 +20,16 @@ export default class CurrentMonthBudget extends Component {
         e.preventDefault()
         const { currentBudget, newCategoryBudget } = this.state
         const omittedChangedCategory = currentBudget.filter(cat => cat.category_id !== newCategoryBudget.category_id)
-        const newBudget = [{...omittedChangedCategory}, newCategoryBudget]
+        const newBudget = [{ ...omittedChangedCategory }, newCategoryBudget]
         this.setState({
-            currentBudget: newBudget
+            currentBudget: newBudget,
             newCategoryBudget: {}
         })
     }
 
     render() {
-        const displayCategories = this.state.currentBudget.map(cat => (
+        const { categories } = this.props.currentBudget
+        const displayCategories = categories.map(cat => (
             <BudgetCategory
                 handleCategoryAmount={this.handleCategoryAmount}
                 submitCategoryAmount={this.submitAmount}

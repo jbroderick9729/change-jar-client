@@ -5,36 +5,62 @@ import './App.css'
 import Sidebar from '../Sidebar/Sidebar'
 import Categories from '../Categories/Categories'
 import Expenses from '../Expenses/Expenses'
-import CurrentMonthBudget from '../CurrentMonthBudget/CurrentMonthBudget'
+import Budget from '../Budget/Budget'
+import CurrentMonthBudget from '../EditBudget/EditBudget'
 
 class App extends Component {
   state = {
     newCategory: {},
-    categories: [{ id: 1, name: 'Mortgage' }, { id: 2, name: 'Groceries' }],
     newExpenseDescription: '',
     newExpenseAmount: '',
+    newExpenseDate: '',
     expenses: [],
     newIncome: '',
     income: '',
-    currentBudget: [{ id: 1, amount: '500' }],
-    budgets: [
-      { id: 1, name: '2019_06', category_id: 1, created: '2019_06_2019' }
-    ],
-    newCategoryEntry: {}
+    currentBudget: {
+      budget_id: 1,
+      budget_name: "June 2019",
+      created_at: new Date("June 01 2019"),
+      last_modified: new Date("June 01 2019"),
+      categories: [
+        {
+          category_id: 1,
+          category_name: "Mortgage",
+          amountBudgeted: 600,
+          amountSpent: 600,
+        }
+      ],
+    },
+    newCategoryEntry: ""
   }
 
-  handleEnterCategory = name => {
-    const id = cuid()
+  handleEnterCategory = newCategoryEntry => {
     this.setState({
-      newCategory: { id, name }
+      newCategoryEntry
     })
   }
 
   handleSubmitCategory = event => {
     event.preventDefault()
+    const category_id = cuid()
+    const currentCats = this.state.currentBudget.categories
+    const newCat = {
+      category_id,
+      category_name: this.state.newCategoryEntry,
+      amountBudgeted: 0,
+      amountSpent: 0,
+    }
+    const newCats = [...currentCats, newCat]
+    const newBudget = { ...this.state.currentBudget }
+    newBudget.categories = newCats
     this.setState({
-      categories: [...this.state.categories, this.state.newCategory],
-      newCategory: {}
+      currentBudget: newBudget
+    })
+  }
+
+  handleEnterExpenseDate = newExpenseDate => {
+    this.setState({
+      newExpenseDate
     })
   }
 
@@ -52,16 +78,20 @@ class App extends Component {
 
   handleSubmitExpense = event => {
     event.preventDefault()
+    const expense_id = cuid()
+    const newExpense = {
+      expense_id,
+      date: this.state.newExpenseDate,
+      description: this.state.newExpenseDescription,
+      amount: this.state.newExpenseAmount,
+      created_at: Date.now(),
+      last_modified: Date.now(),
+    }
     this.setState({
-      expenses: [
-        ...this.state.expenses,
-        {
-          amount: this.state.newExpenseAmount,
-          description: this.state.newExpenseDescription
-        }
-      ],
+      expenses: [...this.state.expenses, newExpense],
       newExpenseAmount: '',
-      newExpenseDescription: ''
+      newExpenseDescription: '',
+      newExpenseDate: ''
     })
   }
 
@@ -100,9 +130,8 @@ class App extends Component {
   }
 
   render() {
-    const { categories, expenses } = this.state
     return (
-      <div className="App">
+      <div>
         <Router>
           <header>
             <Link to="/">
@@ -115,12 +144,18 @@ class App extends Component {
               <Route
                 exact
                 path="/"
+                render={() => <Budget budget={this.state.currentBudget} />}
+              />
+              <Route
+                exact
+                path="/"
                 render={() => (
                   <Expenses
+                    enterExpenseDate={this.handleEnterExpenseDate}
                     enterExpenseDescription={this.handleEnterExpenseDescription}
                     enterExpenseAmount={this.handleEnterExpenseAmount}
                     submitExpense={this.handleSubmitExpense}
-                    expenses={expenses}
+                    expenses={this.state.expenses}
                     newExpenseAmount={this.state.newExpenseAmount}
                     newExpenseDescription={this.state.newExpenseDescription}
                   />
@@ -132,25 +167,7 @@ class App extends Component {
                   <Categories
                     enterCategory={this.handleEnterCategory}
                     submitCategory={this.handleSubmitCategory}
-                    categories={categories}
                     newCategory={this.state.newCategory}
-                  />
-                )}
-              />
-              <Route
-                exact
-                path="/budget"
-                render={() => (
-                  <CurrentMonthBudget
-                    categories={categories}
-                    income={this.state.income}
-                    newIncome={this.state.newIncome}
-                    submitIncome={this.handleSubmitIncome}
-                    enterIncome={this.handleEnterIncome}
-                    enterCategoryAmount={this.handleEnterCategoryAmount}
-                    submitCategoryAmount={this.handleSubmitCategoryAmount}
-                    currentBudget={this.state.currentBudget}
-                    expenses={this.state.expenses}
                   />
                 )}
               />

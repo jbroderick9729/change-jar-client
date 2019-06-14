@@ -15,7 +15,7 @@ export const BudgetCategory = props => {
         </label>
         <button type="submit">Enter</button>
       </form>
-      {props.amount}
+      {`${props.amountSpent} spent out of ${props.amountBudgeted}`}
     </li>
   )
 }

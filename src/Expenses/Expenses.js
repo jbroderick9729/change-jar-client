@@ -10,15 +10,23 @@ export default class Expenses extends Component {
     const expenseItems = this.props.expenses.map((expense, i) => (
       <li key={i}>{`${expense.amount} | ${expense.description}`}</li>
     ))
-    const date = new Date()
     return (
       <section>
         <div>
           <header>
             <h2>Expenses</h2>
-            <h3>{date.toDateString()}</h3>
           </header>
           <form onSubmit={e => this.props.submitExpense(e)}>
+            <label>
+              Date:
+              <input
+                type="date"
+                onChange={e =>
+                  this.props.enterExpenseDate(e.target.value)
+                }
+                value={this.props.newExpenseDescription}
+              />
+            </label>
             <label>
               Enter a new expense:
               <input
