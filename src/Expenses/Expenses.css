@@ -1,0 +1,21 @@
+html {
+  font-size: 16px;
+}
+
+.expense-form {
+  display: flex;
+  flex-direction: column;
+}
+
+input {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+button {
+  margin-top: 1rem;
+}
+
+select {
+  display: block;
+}

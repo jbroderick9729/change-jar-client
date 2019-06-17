@@ -1,6 +1,6 @@
 import React from 'react'
 
-export const BudgetCategory = props => {
+export default function BudgetCategory(props) {
   return (
     <li key={props.category_id}>
       <form onSubmit={e => props.submitCategoryAmount(e)}>

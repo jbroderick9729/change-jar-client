@@ -1,12 +1,11 @@
-
 import React from 'react'
 import ReactDOM from 'react-dom'
-import EditBudget from './EditBudget'
+import Manage from './Manage'
 
-describe('CurrentMonthBudget', () => {
+describe('Categories', () => {
     it('renders without crashing', () => {
         const div = document.createElement('div');
-        ReactDOM.render(<EditBudget />, div)
+        ReactDOM.render(<Manage />, div)
         ReactDOM.unmountComponentAtNode(div)
     })
 })

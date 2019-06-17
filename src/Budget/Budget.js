@@ -1,15 +1,21 @@
 import React from 'react'
 import './Budget.css'
 
-export default function Budget(props) {
+function Budget(props) {
     return (
         <div>
             <header>
                 <h2>Budget</h2>
             </header>
             <ul>
-                {props.budget.categories.map(cat => <li>{`${cat.category_name} | ${cat.amountSpent} | ${cat.amountBudgeted}`}</li>)}
+                {props.budgetCategories.map(cat => <li key={cat.category_id}>{`${cat.category_name} | ${cat.amountSpent} | ${cat.amountBudgeted}`}</li>)}
             </ul>
         </div>
     )
 }
+
+Budget.defaultProps = {
+    budgetCategories: []
+}
+
+export default Budget

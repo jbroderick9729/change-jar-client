@@ -3,12 +3,13 @@ import './Expenses.css'
 
 export default class Expenses extends Component {
   static defaultProps = {
-    expenses: []
+    expenses: [],
+    categories: []
   }
 
   render() {
-    const expenseItems = this.props.expenses.map((expense, i) => (
-      <li key={i}>{`${expense.amount} | ${expense.description}`}</li>
+    const expenseItems = this.props.expenses.map(expense => (
+      <li key={expense.id}>{`${expense.date} | ${expense.amount} | ${expense.description} | ${expense.category}`}</li>
     ))
     return (
       <section>
@@ -16,15 +17,15 @@ export default class Expenses extends Component {
           <header>
             <h2>Expenses</h2>
           </header>
-          <form onSubmit={e => this.props.submitExpense(e)}>
+          <form className="expense-form" onSubmit={e => this.props.submitExpense(e)}>
             <label>
               Date:
               <input
-                type="date"
+                type="text"
                 onChange={e =>
                   this.props.enterExpenseDate(e.target.value)
                 }
-                value={this.props.newExpenseDescription}
+                value={this.props.newExpenseDate}
               />
             </label>
             <label>
@@ -47,16 +48,20 @@ export default class Expenses extends Component {
                 value={this.props.newExpenseAmount}
               />
             </label>
-            <label>Category: 
-              <select>
-                {this.props.categories.map(cat => 
-                  <option 
-                      key={cat.category_id} 
-                      id={cat.category_id}>{cat.category_name}</option>)
-                      onChange={e => this.props.selectExpenseCategory(e.target.value)}
+            <label>Category:
+              <select
+                name="categories"
+                onChange={e => this.props.selectExpenseCategory(e.target.value)}>
+                {this.props.categories.map(cat =>
+                  <option
+                    key={cat.category_id}
+                    value={cat.category_name}
+                    id={cat.category_id}>
+                    {cat.category_name}
+                  </option>)}
               </select>
             </label>
-            <input type="submit" value="Enter" />
+            <button type="submit">Submit expense</button>
           </form>
           <hr />
           <h3>Your Expenses</h3>

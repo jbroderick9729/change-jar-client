@@ -3,21 +3,20 @@ import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
 import cuid from 'cuid'
 import './App.css'
 import Sidebar from '../Sidebar/Sidebar'
-import Categories from '../Categories/Categories'
+import Manage from '../Manage/Manage'
 import Expenses from '../Expenses/Expenses'
 import Budget from '../Budget/Budget'
-import CurrentMonthBudget from '../EditBudget/EditBudget'
 
 class App extends Component {
   state = {
-    newCategory: {},
+    newCategoryEntry: '',
+    newCategoryAmountEntry: {},
     newExpenseDescription: '',
     newExpenseAmount: '',
-    newExpenseDate: '',
-    newExpenseCategory: ''
+    newExpenseDate: new Date().toLocaleDateString(),
+    newExpenseCategory: 'Mortgage',
     expenses: [],
-    newIncome: '',
-    income: '',
+    newCategoryBudgetAmount: '',
     currentBudget: {
       budget_id: 1,
       budget_name: 'June 2019',
@@ -29,10 +28,15 @@ class App extends Component {
           category_name: 'Mortgage',
           amountBudgeted: 600,
           amountSpent: 600
-        }
+        },
+        {
+          category_id: 2,
+          category_name: 'Groceries',
+          amountBudgeted: 200,
+          amountSpent: 0
+        },
       ]
     },
-    newCategoryEntry: ''
   }
 
   handleEnterCategory = newCategoryEntry => {
@@ -54,8 +58,10 @@ class App extends Component {
     const newCats = [...currentCats, newCat]
     const newBudget = { ...this.state.currentBudget }
     newBudget.categories = newCats
+    console.log(newBudget)
     this.setState({
-      currentBudget: newBudget
+      currentBudget: newBudget,
+      newCategoryEntry: ''
     })
   }
 
@@ -85,13 +91,18 @@ class App extends Component {
 
   handleSubmitExpense = event => {
     event.preventDefault()
+    const cat = this.state.currentBudget.categories.find(cat => cat.category_name ===
+      this.state.newExpenseCategory)
+    const catId = cat.category_id
+
     const expense_id = cuid()
     const newExpense = {
       expense_id,
       date: this.state.newExpenseDate,
       description: this.state.newExpenseDescription,
-      amount: this.state.newExpenseAmount,
-      category: this.state.newExpenseCategory
+      amount: parseInt(this.state.newExpenseAmount),
+      category: this.state.newExpenseCategory,
+      category_id: catId,
       created_at: Date.now(),
       last_modified: Date.now()
     }
@@ -100,48 +111,61 @@ class App extends Component {
       newExpenseAmount: '',
       newExpenseDescription: '',
       newExpenseDate: ''
-    }, () => this.updateBudgetWithExpenses)
-  }
-  
-  updateBudgetWithExpenses = () => {
-    //can either set new expense in expenses in state but also
-    // find that budget cat in budget and update there to
-    // or
-    // have a func that iterates through all expenses, retotal,
-  }// then a func that updates budget based on all expenses
+    }, () => this.updateBudgetWithExpenses(newExpense))
 
-
-  handleEnterIncome = newIncome => {
-    this.setState({
-      newIncome
-    })
   }
 
-  handleSubmitIncome = event => {
-    event.preventDefault()
+  updateBudgetWithExpenses = (newExpense) => {
+    const currentCats = this.state.currentBudget.categories
+    const catToChange = currentCats.find(cat => cat.category_id == newExpense.category_id)
+    const restOfCats = currentCats.filter(cat => cat.category_id != newExpense.category_id)
+
+    catToChange.amountSpent += newExpense.amount
+
+    const updatedCats = [...restOfCats, catToChange]
+
+    const { currentBudget } = this.state
+    currentBudget.categories = updatedCats
+
     this.setState({
-      income: this.state.newIncome,
-      newIncome: ''
+      currentBudget
     })
+
   }
 
   handleEnterCategoryAmount = (amount, id) => {
-    const newCategoryEntry = {
+    const newCategoryAmountEntry = {
       id,
       amount
     }
     this.setState({
-      newCategoryEntry
+      newCategoryAmountEntry
     })
   }
 
   handleSubmitCategoryAmount = e => {
     e.preventDefault()
-    const omitExistingCategoryObj = this.state.currentBudget.filter(
-      cat => cat.id !== this.state.newCategoryEntry.id
-    )
+    const catToChange = this.state.newCategoryAmountEntry
+    console.log('cat in handle submit', catToChange)
     this.setState({
-      currentBudget: [...omitExistingCategoryObj, this.state.newCategoryEntry]
+      newCategoryAmountEntry: '',
+    }, () => this.updateBudgetWithCategoryAmount(catToChange))
+  }
+
+  updateBudgetWithCategoryAmount = (category) => {
+    const currentCats = this.state.currentBudget.categories
+
+    const catToChange = currentCats.find(cat => cat.category_id == category.id)
+
+    const restOfCats = currentCats.filter(cat => cat.category_id != category.id)
+    catToChange.amountBudgeted = parseInt(category.amount)
+    const updatedCats = [...restOfCats, catToChange]
+
+    const { currentBudget } = this.state
+    currentBudget.categories = updatedCats
+
+    this.setState({
+      currentBudget
     })
   }
 
@@ -160,7 +184,7 @@ class App extends Component {
               <Route
                 exact
                 path="/"
-                render={() => <Budget budget={this.state.currentBudget} />}
+                render={() => <Budget budgetCategories={this.state.currentBudget.categories} />}
               />
               <Route
                 exact
@@ -175,6 +199,8 @@ class App extends Component {
                     expenses={this.state.expenses}
                     newExpenseAmount={this.state.newExpenseAmount}
                     newExpenseDescription={this.state.newExpenseDescription}
+                    newExpenseDate={this.state.newExpenseDate}
+                    newExpenseCategory={this.state.newExpenseCategory}
                     categories={this.state.currentBudget.categories}
                   />
                 )}
@@ -182,10 +208,14 @@ class App extends Component {
               <Route
                 path="/manage-categories"
                 render={() => (
-                  <Categories
+                  <Manage
                     enterCategory={this.handleEnterCategory}
                     submitCategory={this.handleSubmitCategory}
-                    newCategory={this.state.newCategory}
+                    newCategoryEntry={this.state.newCategoryEntry}
+                    categories={this.state.currentBudget.categories}
+                    enterCategoryAmount={this.handleEnterCategoryAmount}
+                    submitCategoryAmount={this.handleSubmitCategoryAmount}
+                    newCategoryBudgetAmount={this.state.newCategoryBudgetAmount}
                   />
                 )}
               />
@@ -198,3 +228,6 @@ class App extends Component {
 }
 
 export default App
+
+
+// newCategoryAmountEntry
