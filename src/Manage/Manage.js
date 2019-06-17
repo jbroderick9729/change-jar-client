@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import BudgetCategory from '../BudgetCategory/BudgetCategory'
+import './Manage.css'
 
 export default class Manage extends Component {
   static defaultProps = {
@@ -61,12 +62,13 @@ export default class Manage extends Component {
               <form onSubmit={e => this.handleSubmitIncome(e)}>
                 <label>
                   Enter your total income for the month:
-                    <input
-                    type="text"
-                    onChange={e => this.handleEnterIncome(e.target.value)}
-                    value={this.state.newIncome}
-                  />
-                </label>
+                  </label>
+                <input
+                  type="text"
+                  onChange={e => this.handleEnterIncome(e.target.value)}
+                  value={this.state.newIncome}
+                />
+
                 <button type="submit">Submit</button>
               </form>
             </div>}
@@ -79,13 +81,13 @@ export default class Manage extends Component {
           <form onSubmit={e => this.props.submitCategory(e)}>
             <label>
               Enter a new category:
-                <input
-                type="text"
-                placeholder="Mortgage, Rent, Groceries ..."
-                onChange={e => this.props.enterCategory(e.target.value)}
-                value={this.props.newCategoryEntry}
-              />
-            </label>
+              </label>
+            <input
+              type="text"
+              placeholder="Mortgage, Rent, Groceries ..."
+              onChange={e => this.props.enterCategory(e.target.value)}
+              value={this.props.newCategoryEntry}
+            />
             <input type="submit" value="Enter" />
           </form>
           {/* <div>

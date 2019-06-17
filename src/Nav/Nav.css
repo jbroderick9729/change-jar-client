@@ -1,0 +1,14 @@
+nav {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+a {
+  margin-right: 1rem;
+}
+
+.button {
+  margin-top: -1rem;
+  margin-bottom: 0.25rem;
+}

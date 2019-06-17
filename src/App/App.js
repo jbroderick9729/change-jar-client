@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
 import cuid from 'cuid'
 import './App.css'
-import Sidebar from '../Sidebar/Sidebar'
+import Nav from '../Nav/Nav'
 import Manage from '../Manage/Manage'
 import Expenses from '../Expenses/Expenses'
 import Budget from '../Budget/Budget'
@@ -173,54 +173,52 @@ class App extends Component {
     return (
       <div>
         <Router>
+          <Nav />
           <header>
             <Link to="/">
               <h1>Change Jar</h1>
             </Link>
           </header>
-          <div className="container">
-            <Sidebar />
-            <main>
-              <Route
-                exact
-                path="/"
-                render={() => <Budget budgetCategories={this.state.currentBudget.categories} />}
-              />
-              <Route
-                exact
-                path="/"
-                render={() => (
-                  <Expenses
-                    enterExpenseDate={this.handleEnterExpenseDate}
-                    enterExpenseDescription={this.handleEnterExpenseDescription}
-                    enterExpenseAmount={this.handleEnterExpenseAmount}
-                    selectExpenseCategory={this.handleSelectExpenseCategory}
-                    submitExpense={this.handleSubmitExpense}
-                    expenses={this.state.expenses}
-                    newExpenseAmount={this.state.newExpenseAmount}
-                    newExpenseDescription={this.state.newExpenseDescription}
-                    newExpenseDate={this.state.newExpenseDate}
-                    newExpenseCategory={this.state.newExpenseCategory}
-                    categories={this.state.currentBudget.categories}
-                  />
-                )}
-              />
-              <Route
-                path="/manage-categories"
-                render={() => (
-                  <Manage
-                    enterCategory={this.handleEnterCategory}
-                    submitCategory={this.handleSubmitCategory}
-                    newCategoryEntry={this.state.newCategoryEntry}
-                    categories={this.state.currentBudget.categories}
-                    enterCategoryAmount={this.handleEnterCategoryAmount}
-                    submitCategoryAmount={this.handleSubmitCategoryAmount}
-                    newCategoryBudgetAmount={this.state.newCategoryBudgetAmount}
-                  />
-                )}
-              />
-            </main>
-          </div>
+          <main>
+            <Route
+              exact
+              path="/"
+              render={() => <Budget budgetCategories={this.state.currentBudget.categories} />}
+            />
+            <Route
+              exact
+              path="/"
+              render={() => (
+                <Expenses
+                  enterExpenseDate={this.handleEnterExpenseDate}
+                  enterExpenseDescription={this.handleEnterExpenseDescription}
+                  enterExpenseAmount={this.handleEnterExpenseAmount}
+                  selectExpenseCategory={this.handleSelectExpenseCategory}
+                  submitExpense={this.handleSubmitExpense}
+                  expenses={this.state.expenses}
+                  newExpenseAmount={this.state.newExpenseAmount}
+                  newExpenseDescription={this.state.newExpenseDescription}
+                  newExpenseDate={this.state.newExpenseDate}
+                  newExpenseCategory={this.state.newExpenseCategory}
+                  categories={this.state.currentBudget.categories}
+                />
+              )}
+            />
+            <Route
+              path="/manage-categories"
+              render={() => (
+                <Manage
+                  enterCategory={this.handleEnterCategory}
+                  submitCategory={this.handleSubmitCategory}
+                  newCategoryEntry={this.state.newCategoryEntry}
+                  categories={this.state.currentBudget.categories}
+                  enterCategoryAmount={this.handleEnterCategoryAmount}
+                  submitCategoryAmount={this.handleSubmitCategoryAmount}
+                  newCategoryBudgetAmount={this.state.newCategoryBudgetAmount}
+                />
+              )}
+            />
+          </main>
         </Router>
       </div>
     )
