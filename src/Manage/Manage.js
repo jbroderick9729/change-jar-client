@@ -5,8 +5,8 @@ import './Manage.css'
 export default class Manage extends Component {
   static defaultProps = {
     categories: [],
-    enterCategoryAmount: () => {},
-    submitCategoryAmount: () => {}
+    enterCategoryAmount: () => { },
+    submitCategoryAmount: () => { }
   }
 
   state = {
@@ -17,7 +17,7 @@ export default class Manage extends Component {
 
   handleEnterIncome = newIncome => {
     this.setState({
-      newIncome
+      newIncome: parseInt(newIncome)
     })
   }
 
@@ -44,8 +44,14 @@ export default class Manage extends Component {
       />
     ))
 
-    const budgeted = this.state.currentBudget.reduce((a, b) => a + b.amount)
-    const left = this.props.income - budgeted
+    const mapCatsAmountBudgeted = this.props.categories.map(cat => cat.amountBudgeted)
+    const budgeted = mapCatsAmountBudgeted.reduce((a, b) => a + b)
+
+    const left = this.state.income - budgeted
+
+    // const budgeted = this.props.categories.reduce((a, b) => a + b.amountBudgeted)
+
+
 
     return (
       <div>
@@ -55,7 +61,7 @@ export default class Manage extends Component {
             {this.state.income === '' ? null : (
               <h3>{`Total income to spend this month: ${
                 this.state.income
-              }`}</h3>
+                }`}</h3>
             )}
           </header>
           {this.state.showEditIncomeButton ? (
@@ -69,19 +75,19 @@ export default class Manage extends Component {
               Edit Income
             </button>
           ) : (
-            <div>
-              <form onSubmit={e => this.handleSubmitIncome(e)}>
-                <label>Enter your total income for the month:</label>
-                <input
-                  type="text"
-                  onChange={e => this.handleEnterIncome(e.target.value)}
-                  value={this.state.newIncome}
-                />
+              <div>
+                <form onSubmit={e => this.handleSubmitIncome(e)}>
+                  <label>Enter your total income for the month:</label>
+                  <input
+                    type="text"
+                    onChange={e => this.handleEnterIncome(e.target.value)}
+                    value={this.state.newIncome}
+                  />
 
-                <button type="submit">Submit</button>
-              </form>
-            </div>
-          )}
+                  <button type="submit">Submit</button>
+                </form>
+              </div>
+            )}
         </section>
         <hr />
         <section>

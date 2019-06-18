@@ -9,7 +9,7 @@ export default class Expenses extends Component {
 
   render() {
     const expenseItems = this.props.expenses.map(expense => (
-      <li key={expense.id}>{`${expense.date} | ${expense.amount} | ${expense.description} | ${expense.category}`}</li>
+      <li key={expense.expense_id}>{`${expense.date} | ${expense.amount} | ${expense.description} | ${expense.category}`}</li>
     ))
     return (
       <section>

@@ -58,7 +58,6 @@ class App extends Component {
     const newCats = [...currentCats, newCat]
     const newBudget = { ...this.state.currentBudget }
     newBudget.categories = newCats
-    console.log(newBudget)
     this.setState({
       currentBudget: newBudget,
       newCategoryEntry: ''
@@ -79,7 +78,7 @@ class App extends Component {
 
   handleEnterExpenseAmount = newExpenseAmount => {
     this.setState({
-      newExpenseAmount
+      newExpenseAmount: parseInt(newExpenseAmount)
     })
   }
 
@@ -100,7 +99,7 @@ class App extends Component {
       expense_id,
       date: this.state.newExpenseDate,
       description: this.state.newExpenseDescription,
-      amount: parseInt(this.state.newExpenseAmount),
+      amount: this.state.newExpenseAmount,
       category: this.state.newExpenseCategory,
       category_id: catId,
       created_at: Date.now(),
@@ -117,8 +116,9 @@ class App extends Component {
 
   updateBudgetWithExpenses = (newExpense) => {
     const currentCats = this.state.currentBudget.categories
-    const catToChange = currentCats.find(cat => cat.category_id == newExpense.category_id)
-    const restOfCats = currentCats.filter(cat => cat.category_id != newExpense.category_id)
+
+    const catToChange = currentCats.find(cat => cat.category_id === newExpense.category_id)
+    const restOfCats = currentCats.filter(cat => cat.category_id !== newExpense.category_id)
 
     catToChange.amountSpent += newExpense.amount
 
@@ -130,13 +130,12 @@ class App extends Component {
     this.setState({
       currentBudget
     })
-
   }
 
   handleEnterCategoryAmount = (amount, id) => {
     const newCategoryAmountEntry = {
       id,
-      amount
+      amount: parseInt(amount),
     }
     this.setState({
       newCategoryAmountEntry
@@ -146,7 +145,6 @@ class App extends Component {
   handleSubmitCategoryAmount = e => {
     e.preventDefault()
     const catToChange = this.state.newCategoryAmountEntry
-    console.log('cat in handle submit', catToChange)
     this.setState({
       newCategoryAmountEntry: '',
     }, () => this.updateBudgetWithCategoryAmount(catToChange))
@@ -155,9 +153,9 @@ class App extends Component {
   updateBudgetWithCategoryAmount = (category) => {
     const currentCats = this.state.currentBudget.categories
 
-    const catToChange = currentCats.find(cat => cat.category_id == category.id)
+    const catToChange = currentCats.find(cat => cat.category_id === category.id)
 
-    const restOfCats = currentCats.filter(cat => cat.category_id != category.id)
+    const restOfCats = currentCats.filter(cat => cat.category_id !== category.id)
     catToChange.amountBudgeted = parseInt(category.amount)
     const updatedCats = [...restOfCats, catToChange]
 
@@ -228,4 +226,3 @@ class App extends Component {
 export default App
 
 
-// newCategoryAmountEntry
