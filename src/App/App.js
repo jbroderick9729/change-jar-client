@@ -117,6 +117,7 @@ class App extends Component {
     )
   }
 
+
   updateBudgetWithExpenses = newExpense => {
     const currentCats = this.state.currentBudget.categories
 
@@ -151,6 +152,8 @@ class App extends Component {
 
   handleSubmitCategoryAmount = e => {
     e.preventDefault()
+    console.log('handleSubmitCategoryAmount ran')
+
     const catToChange = this.state.newCategoryAmountEntry
     this.setState(
       {

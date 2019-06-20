@@ -92,8 +92,20 @@ export default class Manage extends Component {
         <hr />
         <section>
           <header>
-            <h2>Budget categories</h2>
+            <h2>Budget</h2>
           </header>
+          <div>
+            <h3>{`Amount Budgeted: ${budgeted} | Amount Left to Budget: ${left}`}</h3>
+            <table>
+              <tr>
+                <th>Category</th>
+                <th>Amount Spent</th>
+                <th>Amount Budgeted</th>
+              </tr>
+              {categoriesList}
+            </table>
+          </div>
+
           <form onSubmit={e => this.props.submitCategory(e)}>
             <label>Enter a new category:</label>
             <input
@@ -104,11 +116,7 @@ export default class Manage extends Component {
             />
             <input type="submit" value="Enter" />
           </form>
-          <div>
-            <h2>Your budget categories</h2>
-            <h3>{`Amount Budgeted: ${budgeted} | Amount Left to Budget: ${left}`}</h3>
-            <ul>{categoriesList}</ul>
-          </div>
+
         </section>
       </div>
     )
