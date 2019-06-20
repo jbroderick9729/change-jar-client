@@ -12,7 +12,7 @@ export default class Manage extends Component {
   state = {
     showEditIncomeButton: true,
     newIncome: '',
-    income: ''
+    income: 0
   }
 
   handleEnterIncome = newIncome => {
@@ -32,7 +32,6 @@ export default class Manage extends Component {
 
   render() {
     const { categories } = this.props
-    // const newCategories = categories.filter(cat => cat.name !== "Pick a category");
 
     const categoriesList = categories.map((cat, i) => (
       <BudgetCategory
@@ -49,17 +48,13 @@ export default class Manage extends Component {
 
     const left = this.state.income - budgeted
 
-    // const budgeted = this.props.categories.reduce((a, b) => a + b.amountBudgeted)
-
-
-
     return (
       <div>
         <section>
           <header>
             <h2>Income</h2>
             {this.state.income === '' ? null : (
-              <h3>{`Total income to spend this month: ${
+              <h3>{`Total monthly income: ${
                 this.state.income
                 }`}</h3>
             )}
@@ -72,7 +67,7 @@ export default class Manage extends Component {
                 })
               }}
             >
-              Edit Income
+              {this.state.income === 0 Enter Income ? Edit Income}
             </button>
           ) : (
               <div>

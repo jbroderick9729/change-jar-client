@@ -19,6 +19,7 @@ function Budget(props) {
         <h2>Budget</h2>
       </header>
       <table>
+        <th>{' '}</th>
         <th>Category</th>
         <th>Amount Spent</th>
         <th>Amount Budgeted</th>
