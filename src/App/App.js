@@ -26,17 +26,17 @@ class App extends Component {
         {
           category_id: 1,
           category_name: 'Mortgage',
-          amountBudgeted: 600,
-          amountSpent: 600
+          amountBudgeted: 0,
+          amountSpent: 0
         },
         {
           category_id: 2,
           category_name: 'Groceries',
-          amountBudgeted: 200,
+          amountBudgeted: 0,
           amountSpent: 0
-        },
+        }
       ]
-    },
+    }
   }
 
   handleEnterCategory = newCategoryEntry => {
@@ -90,8 +90,9 @@ class App extends Component {
 
   handleSubmitExpense = event => {
     event.preventDefault()
-    const cat = this.state.currentBudget.categories.find(cat => cat.category_name ===
-      this.state.newExpenseCategory)
+    const cat = this.state.currentBudget.categories.find(
+      cat => cat.category_name === this.state.newExpenseCategory
+    )
     const catId = cat.category_id
 
     const expense_id = cuid()
@@ -105,20 +106,26 @@ class App extends Component {
       created_at: Date.now(),
       last_modified: Date.now()
     }
-    this.setState({
-      expenses: [...this.state.expenses, newExpense],
-      newExpenseAmount: '',
-      newExpenseDescription: '',
-      newExpenseDate: ''
-    }, () => this.updateBudgetWithExpenses(newExpense))
-
+    this.setState(
+      {
+        expenses: [...this.state.expenses, newExpense],
+        newExpenseAmount: '',
+        newExpenseDescription: '',
+        newExpenseDate: ''
+      },
+      () => this.updateBudgetWithExpenses(newExpense)
+    )
   }
 
-  updateBudgetWithExpenses = (newExpense) => {
+  updateBudgetWithExpenses = newExpense => {
     const currentCats = this.state.currentBudget.categories
 
-    const catToChange = currentCats.find(cat => cat.category_id === newExpense.category_id)
-    const restOfCats = currentCats.filter(cat => cat.category_id !== newExpense.category_id)
+    const catToChange = currentCats.find(
+      cat => cat.category_id === newExpense.category_id
+    )
+    const restOfCats = currentCats.filter(
+      cat => cat.category_id !== newExpense.category_id
+    )
 
     catToChange.amountSpent += newExpense.amount
 
@@ -135,7 +142,7 @@ class App extends Component {
   handleEnterCategoryAmount = (amount, id) => {
     const newCategoryAmountEntry = {
       id,
-      amount: parseInt(amount),
+      amount: parseInt(amount)
     }
     this.setState({
       newCategoryAmountEntry
@@ -145,17 +152,22 @@ class App extends Component {
   handleSubmitCategoryAmount = e => {
     e.preventDefault()
     const catToChange = this.state.newCategoryAmountEntry
-    this.setState({
-      newCategoryAmountEntry: '',
-    }, () => this.updateBudgetWithCategoryAmount(catToChange))
+    this.setState(
+      {
+        newCategoryAmountEntry: ''
+      },
+      () => this.updateBudgetWithCategoryAmount(catToChange)
+    )
   }
 
-  updateBudgetWithCategoryAmount = (category) => {
+  updateBudgetWithCategoryAmount = category => {
     const currentCats = this.state.currentBudget.categories
 
     const catToChange = currentCats.find(cat => cat.category_id === category.id)
 
-    const restOfCats = currentCats.filter(cat => cat.category_id !== category.id)
+    const restOfCats = currentCats.filter(
+      cat => cat.category_id !== category.id
+    )
     catToChange.amountBudgeted = parseInt(category.amount)
     const updatedCats = [...restOfCats, catToChange]
 
@@ -181,7 +193,11 @@ class App extends Component {
             <Route
               exact
               path="/"
-              render={() => <Budget budgetCategories={this.state.currentBudget.categories} />}
+              render={() => (
+                <Budget
+                  budgetCategories={this.state.currentBudget.categories}
+                />
+              )}
             />
             <Route
               exact
@@ -224,5 +240,3 @@ class App extends Component {
 }
 
 export default App
-
-
