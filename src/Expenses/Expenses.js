@@ -19,9 +19,8 @@ export default class Expenses extends Component {
     return (
       <section>
         <div>
-          <header>
-            <h2>Expenses</h2>
-          </header>
+          <h2>Enter your expenses</h2>
+          <h3>Expenses you enter here will appear below and their amounts will be reflected in your monthly budget above</h3>
           <form
             className="expense-form"
             onSubmit={e => this.props.submitExpense(e)}
@@ -60,6 +59,7 @@ export default class Expenses extends Component {
                 name="categories"
                 onChange={e => this.props.selectExpenseCategory(e.target.value)}
               >
+                <option value='blank'>Choose a category...</option>
                 {this.props.categories.map(cat => (
                   <option
                     key={cat.category_id}
@@ -75,13 +75,20 @@ export default class Expenses extends Component {
           </form>
           <hr />
           <h3>Your Expenses</h3>
-          <table>
-            <th>Date</th>
-            <th>Amount</th>
-            <th>Description</th>
-            <th>Category</th>
-            {expenseItems}
-          </table>
+          {!!this.props.expenses.length &&
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Amount</th>
+                  <th>Description</th>
+                  <th>Category</th>
+                </tr>
+              </thead>
+              <tbody>
+                {expenseItems}
+              </tbody>
+            </table>}
         </div>
       </section>
     )

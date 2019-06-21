@@ -32,8 +32,17 @@ export default class Manage extends Component {
 
   render() {
     const { categories } = this.props
-
-    const categoriesList = categories.map((cat, i) => (
+    const sortedCategories = categories.sort((a, b) => {
+      if (a.category_id < b.category_id) {
+        return -1;
+      }
+      if (a.category_id > b.category_id) {
+        return 1;
+      }
+      return 0;
+    })
+    console.log(sortedCategories)
+    const categoriesList = sortedCategories.map((cat, i) => (
       <BudgetCategory
         key={i}
         enterCategoryAmount={this.props.enterCategoryAmount}
@@ -52,13 +61,16 @@ export default class Manage extends Component {
       <div>
         <section>
           <header>
-            <h2>Income</h2>
-            {this.state.income === '' ? null : (
-              <h3>{`Total monthly income: ${
-                this.state.income
-                }`}</h3>
-            )}
+            <h2>Manage your budget and income</h2>
           </header>
+          <h3>Income</h3>
+          <h4>This is how much money you make each month</h4>
+          {this.state.income === 0 ? null : (
+            <h3>${
+              this.state.income
+            }</h3>
+          )}
+
           {this.state.showEditIncomeButton ? (
             <button
               onClick={() => {
@@ -67,16 +79,16 @@ export default class Manage extends Component {
                 })
               }}
             >
-              {this.state.income === 0 Enter Income ? Edit Income}
+              {this.state.income === 0 ? `Enter Income` : `Edit Income`}
             </button>
           ) : (
               <div>
                 <form onSubmit={e => this.handleSubmitIncome(e)}>
-                  <label>Enter your total income for the month:</label>
                   <input
                     type="text"
                     onChange={e => this.handleEnterIncome(e.target.value)}
                     value={this.state.newIncome}
+                    placeholder="Your monthly income"
                   />
 
                   <button type="submit">Submit</button>
@@ -86,21 +98,20 @@ export default class Manage extends Component {
         </section>
         <hr />
         <section>
-          <header>
-            <h2>Budget</h2>
-          </header>
-          <div>
-            <h3>{`Amount Budgeted: ${budgeted} | Amount Left to Budget: ${left}`}</h3>
-            <table>
+          <h3>Budget</h3>
+          {left > 0 && <h4>{`Manage your budget categories here. Currently, you've budgeted ${budgeted} of your monthly income and you have ${left} left to assign to your budget categories.`}</h4>}
+          <table>
+            <thead>
               <tr>
                 <th>Category</th>
                 <th>Amount Spent</th>
                 <th>Amount Budgeted</th>
               </tr>
+            </thead>
+            <tbody>
               {categoriesList}
-            </table>
-          </div>
-
+            </tbody>
+          </table>
           <form onSubmit={e => this.props.submitCategory(e)}>
             <label>Enter a new category:</label>
             <input

@@ -25,13 +25,25 @@ class App extends Component {
       categories: [
         {
           category_id: 1,
-          category_name: 'Mortgage',
+          category_name: 'first',
+          amountBudgeted: 0,
+          amountSpent: 0
+        },
+        {
+          category_id: 3,
+          category_name: 'third',
+          amountBudgeted: 0,
+          amountSpent: 0
+        },
+        {
+          category_id: 4,
+          category_name: 'fourth',
           amountBudgeted: 0,
           amountSpent: 0
         },
         {
           category_id: 2,
-          category_name: 'Groceries',
+          category_name: 'second',
           amountBudgeted: 0,
           amountSpent: 0
         }
@@ -47,7 +59,8 @@ class App extends Component {
 
   handleSubmitCategory = event => {
     event.preventDefault()
-    const category_id = cuid()
+    const count = this.state.currentBudget.categories.length
+    const category_id = count + 1
     const currentCats = this.state.currentBudget.categories
     const newCat = {
       category_id,
@@ -57,7 +70,16 @@ class App extends Component {
     }
     const newCats = [...currentCats, newCat]
     const newBudget = { ...this.state.currentBudget }
-    newBudget.categories = newCats
+    newBudget.categories = newCats.sort((a, b) => {
+      if (a.category_id < b.category_id) {
+        return -1;
+      }
+      if (a.category_id > b.category_id) {
+        return 1;
+      }
+      return 0;
+    })
+
     this.setState({
       currentBudget: newBudget,
       newCategoryEntry: ''
@@ -111,7 +133,7 @@ class App extends Component {
         expenses: [...this.state.expenses, newExpense],
         newExpenseAmount: '',
         newExpenseDescription: '',
-        newExpenseDate: ''
+        newExpenseDate: new Date().toLocaleDateString()
       },
       () => this.updateBudgetWithExpenses(newExpense)
     )
@@ -133,7 +155,15 @@ class App extends Component {
     const updatedCats = [...restOfCats, catToChange]
 
     const { currentBudget } = this.state
-    currentBudget.categories = updatedCats
+    currentBudget.categories = updatedCats.sort((a, b) => {
+      if (a.category_id < b.category_id) {
+        return -1;
+      }
+      if (a.category_id > b.category_id) {
+        return 1;
+      }
+      return 0;
+    })
 
     this.setState({
       currentBudget
@@ -141,6 +171,7 @@ class App extends Component {
   }
 
   handleEnterCategoryAmount = (amount, id) => {
+    console.log(this.state.currentBudget.categories)
     const newCategoryAmountEntry = {
       id,
       amount: parseInt(amount)
@@ -151,13 +182,14 @@ class App extends Component {
   }
 
   handleSubmitCategoryAmount = e => {
+    console.log(this.state.currentBudget.categories)
     e.preventDefault()
     console.log('handleSubmitCategoryAmount ran')
 
     const catToChange = this.state.newCategoryAmountEntry
     this.setState(
       {
-        newCategoryAmountEntry: ''
+        newCategoryAmountEntry: {}
       },
       () => this.updateBudgetWithCategoryAmount(catToChange)
     )
@@ -175,7 +207,15 @@ class App extends Component {
     const updatedCats = [...restOfCats, catToChange]
 
     const { currentBudget } = this.state
-    currentBudget.categories = updatedCats
+    currentBudget.categories = updatedCats.sort((a, b) => {
+      if (a.category_id < b.category_id) {
+        return -1;
+      }
+      if (a.category_id > b.category_id) {
+        return 1;
+      }
+      return 0;
+    })
 
     this.setState({
       currentBudget
