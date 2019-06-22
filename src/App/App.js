@@ -6,6 +6,7 @@ import Nav from '../Nav/Nav'
 import Manage from '../Manage/Manage'
 import Expenses from '../Expenses/Expenses'
 import Budget from '../Budget/Budget'
+import config from '../config'
 
 class App extends Component {
   state = {
@@ -23,32 +24,18 @@ class App extends Component {
       created_at: new Date('June 01 2019'),
       last_modified: new Date('June 01 2019'),
       categories: [
-        {
-          category_id: 1,
-          category_name: 'first',
-          amountBudgeted: 0,
-          amountSpent: 0
-        },
-        {
-          category_id: 3,
-          category_name: 'third',
-          amountBudgeted: 0,
-          amountSpent: 0
-        },
-        {
-          category_id: 4,
-          category_name: 'fourth',
-          amountBudgeted: 0,
-          amountSpent: 0
-        },
-        {
-          category_id: 2,
-          category_name: 'second',
-          amountBudgeted: 0,
-          amountSpent: 0
-        }
       ]
     }
+  }
+
+  componentDidMount() {
+    fetch(`${config.API_ENDPOINT}/expenses`)
+      .then(res => res.json())
+      .then(expenses => this.setState({ expenses }))
+
+    fetch(`${config.API_ENDPOINT}/categories`)
+      .then(res => res.json())
+      .then(categories => this.setState({ categories }))
   }
 
   handleEnterCategory = newCategoryEntry => {
@@ -59,31 +46,34 @@ class App extends Component {
 
   handleSubmitCategory = event => {
     event.preventDefault()
-    const count = this.state.currentBudget.categories.length
-    const category_id = count + 1
-    const currentCats = this.state.currentBudget.categories
-    const newCat = {
-      category_id,
+    // const count = this.state.currentBudget.categories.length
+    // const category_id = count + 1
+    // const currentCats = this.state.currentBudget.categories
+    const body = {
       category_name: this.state.newCategoryEntry,
-      amountBudgeted: 0,
-      amountSpent: 0
     }
-    const newCats = [...currentCats, newCat]
-    const newBudget = { ...this.state.currentBudget }
-    newBudget.categories = newCats.sort((a, b) => {
-      if (a.category_id < b.category_id) {
-        return -1;
-      }
-      if (a.category_id > b.category_id) {
-        return 1;
-      }
-      return 0;
-    })
-
-    this.setState({
-      currentBudget: newBudget,
-      newCategoryEntry: ''
-    })
+    // const newCats = [...currentCats, newCat]
+    // const newBudget = { ...this.state.currentBudget }
+    // newBudget.categories = newCats.sort((a, b) => {
+    //   if (a.category_id < b.category_id) {
+    //     return -1;
+    //   }
+    //   if (a.category_id > b.category_id) {
+    //     return 1;
+    //   }
+    //   return 0;
+    // })
+    const options = {
+      method: 'POST',
+      "content-type": 'application/json',
+      body: JSON.stringify(body)
+    }
+    fetch(`${config.API_ENDPOINT}/categories`, options)
+      .then(res => res.json())
+      .then(expenses => this.setState({
+        expenses,
+        newCategoryEntry: ''
+      }))
   }
 
   handleEnterExpenseDate = newExpenseDate => {
@@ -283,3 +273,29 @@ class App extends Component {
 }
 
 export default App
+
+
+// {
+//   category_id: 1,
+//   category_name: 'first',
+//   amountBudgeted: 0,
+//   amountSpent: 0
+// },
+// {
+//   category_id: 3,
+//   category_name: 'third',
+//   amountBudgeted: 0,
+//   amountSpent: 0
+// },
+// {
+//   category_id: 4,
+//   category_name: 'fourth',
+//   amountBudgeted: 0,
+//   amountSpent: 0
+// },
+// {
+//   category_id: 2,
+//   category_name: 'second',
+//   amountBudgeted: 0,
+//   amountSpent: 0
+// }
