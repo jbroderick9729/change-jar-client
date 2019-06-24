@@ -17,6 +17,7 @@ class App extends Component {
     newExpenseDate: new Date().toLocaleDateString(),
     newExpenseCategory: 'Mortgage',
     expenses: [],
+    budgetAllocations: [],
     newCategoryBudgetAmount: '',
     currentBudget: {
       budget_id: 1,
@@ -29,14 +30,56 @@ class App extends Component {
   }
 
   componentDidMount() {
+    //get all expenses
     fetch(`${config.API_ENDPOINT}/expenses`)
       .then(res => res.json())
       .then(expenses => this.setState({ expenses }))
-
+    //get all cats
     fetch(`${config.API_ENDPOINT}/categories`)
       .then(res => res.json())
-      .then(categories => this.setState({ categories }))
+      .then(categories => {
+        console.log(categories)
+        this.setState({ categories })
+      })
+    //get all budget allocations
+    fetch(`${config.API_ENDPOINT}/budget-allocations`)
+      .then(res => res.json())
+      .then(budgetAllocations => {
+        console.log(budgetAllocations)
+        this.setState({ budgetAllocations })
+      })
+
+
+    //get all budgets, also find the current one and update currentBudget in state w/ its cats
+    fetch(`${config.API_ENDPOINT}/budgets`)
+      .then(res => res.json())
+      .then(budgets => {
+        const year = new Date().toLocaleString('en-US', { year: 'numeric' });
+        const month = new Date().toLocaleString('en-US', { month: '2-digit' });
+        const budgetName = `${year}_${month}`
+
+        const currentBudget = budgets.find(budget => budget.budget_name === budgetName)
+
+        const newBudget = { ...this.state.currentBudget }
+        newBudget.categories = currentBudget.categories
+
+        this.setState({
+          budgets,
+          currentBudget: newBudget
+        })
+
+      })
+
+
+
   }
+
+  //   making a new budget
+  //   const year = new Date().toLocaleString('en-US', { year: 'numeric'});
+
+  // const month = new Date().toLocaleString('en-US', {month: '2-digit' });
+
+  // const budget_name = `${year}_${month}`
 
   handleEnterCategory = newCategoryEntry => {
     this.setState({
