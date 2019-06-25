@@ -30,7 +30,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    //get all expenses
+    //get all expenses for the current month
     fetch(`${config.API_ENDPOINT}/expenses`)
       .then(res => res.json())
       .then(expenses => this.setState({ expenses }))
@@ -49,37 +49,31 @@ class App extends Component {
         this.setState({ budgetAllocations })
       })
 
+      //construct currentBudget
 
-    //get all budgets, also find the current one and update currentBudget in state w/ its cats
-    fetch(`${config.API_ENDPOINT}/budgets`)
-      .then(res => res.json())
-      .then(budgets => {
-        const year = new Date().toLocaleString('en-US', { year: 'numeric' });
-        const month = new Date().toLocaleString('en-US', { month: '2-digit' });
-        const budgetName = `${year}_${month}`
+      const createCurrentBudget = () => {
+          const currentBudget = this.state.categories.map(cat => {
+            const matchedExpensesForCat = this.state.expenses.filter(exp => exp.category_id === cat.category_id)
+            const matchedBudgetAllocationForCat = this.state.expenses.find(alloc => alloc.category_id === cat.category_id) 
+              cat.amountSpent = matchedExpensesForCat.reduce((a,b) => a + b.amount)
+              cat.amountBudgeted = matchedBudgetAllocationForCat.amount
+          })
+          this.setState({currentBudget})
+      }
 
-        const currentBudget = budgets.find(budget => budget.budget_name === budgetName)
+      //or 
 
-        const newBudget = { ...this.state.currentBudget }
-        newBudget.categories = currentBudget.categories
+      //update query to get all expenses for current month by cat, totaled, returning that + id = amountSpent
 
-        this.setState({
-          budgets,
-          currentBudget: newBudget
-        })
+      //SELECT (expenses.amount, categories.id, categories.category_name) FROM expenses JOIN categories ON expenses.category_id = categories.id WHERE expenses.category_id = ${}  
 
+      //then sum amount spent for each cat
+    
+      //then, SELECT * FROM "budget-allotments" WHERE category_id = get all budgets, also find the current one and update currentBudget in state w/ its cats
+  
       })
 
-
-
   }
-
-  //   making a new budget
-  //   const year = new Date().toLocaleString('en-US', { year: 'numeric'});
-
-  // const month = new Date().toLocaleString('en-US', {month: '2-digit' });
-
-  // const budget_name = `${year}_${month}`
 
   handleEnterCategory = newCategoryEntry => {
     this.setState({
