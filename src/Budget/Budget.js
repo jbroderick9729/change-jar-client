@@ -19,6 +19,7 @@ const rowColor = (amtBudgeted, amtSpent) => {
 }
 
 function Budget(props) {
+  console.log(props.budgetCategories)
   return (
     <div>
       <h3>Budget</h3>
@@ -33,7 +34,7 @@ function Budget(props) {
         </thead>
         <tbody>
           {props.budgetCategories.map(cat => (
-            <tr key={cat.category_id} className={`row ${rowColor(cat.amountBudgeted, cat.amountSpent)}`}>
+            <tr key={cat.id} className={`row ${rowColor(cat.amountBudgeted, cat.amountSpent)}`}>
               <td>{cat.category_name}</td>
               <td>{cat.amountSpent}</td>
               <td>{cat.amountBudgeted}</td>

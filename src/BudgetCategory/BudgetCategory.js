@@ -12,7 +12,7 @@ export default class BudgetCategory extends Component {
 
   render() {
     return (
-      <tr key={this.props.category_id}>
+      <tr key={this.props.id}>
         <td>{this.props.category_name}</td>
         <td>{this.props.amountSpent}</td>
         <td>{this.props.amountBudgeted}</td>

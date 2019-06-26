@@ -17,62 +17,74 @@ class App extends Component {
     newExpenseDate: new Date().toLocaleDateString(),
     newExpenseCategory: 'Mortgage',
     expenses: [],
-    budgetAllocations: [],
+    budgetAllotments: [],
     newCategoryBudgetAmount: '',
-    currentBudget: {
-      budget_id: 1,
-      budget_name: 'June 2019',
-      created_at: new Date('June 01 2019'),
-      last_modified: new Date('June 01 2019'),
-      categories: [
-      ]
-    }
+    currentBudget: [],
+    categories: []
+  }
+
+  handleupdateCurrentBudget = currentBudget => {
+    console.log('handleupdateCurrentBudget ran')
+    console.log(currentBudget)
+    this.setState({
+      currentBudget
+    })
+  }
+
+
+  createCurrentBudget = () => {
+    console.log('creatCurrentBudget ran')
+    console.log(this.state.expenses)
+    const currentBudget = this.state.categories.map(cat => {
+      let newCat = { ...cat }
+
+      const matchedExpensesForCat = this.state.expenses.filter(exp => exp.category === cat.id)
+      const initialValue = 0
+      const totaledAmt = matchedExpensesForCat.reduce((a, b) => parseInt(a) + parseInt(b.amount), initialValue)
+      newCat.amountSpent = totaledAmt
+
+      const matchedBudgetAllotmentForCat = this.state.budgetAllotments.find(allot => allot.category === cat.id)
+
+      if (!matchedBudgetAllotmentForCat) {
+        newCat.amountBudgeted = 0
+      } else
+        newCat.amountBudgeted = parseInt(matchedBudgetAllotmentForCat.amount)
+
+      return newCat
+    })
+    this.setState({ currentBudget })
   }
 
   componentDidMount() {
-    //get all expenses for the current month
-    fetch(`${config.API_ENDPOINT}/expenses`)
-      .then(res => res.json())
-      .then(expenses => this.setState({ expenses }))
-    //get all cats
-    fetch(`${config.API_ENDPOINT}/categories`)
-      .then(res => res.json())
-      .then(categories => {
-        console.log(categories)
-        this.setState({ categories })
+    const expensesPromise = fetch(`${config.API_ENDPOINT}/expenses`)
+
+    const categoriesPromise = fetch(`${config.API_ENDPOINT}/categories`)
+
+    const budgetAllotmentsPromise = fetch(`${config.API_ENDPOINT}/budget-allotments`)
+
+    Promise.all([expensesPromise, categoriesPromise, budgetAllotmentsPromise])
+      .then(res => {
+        const responses = res.map(response => response.json())
+        return Promise.all(responses)
       })
-    //get all budget allocations
-    fetch(`${config.API_ENDPOINT}/budget-allocations`)
-      .then(res => res.json())
-      .then(budgetAllocations => {
-        console.log(budgetAllocations)
-        this.setState({ budgetAllocations })
-      })
+      .then(([expenses, categories, budgetAllotments]) => this.setState({
+        expenses,
+        categories,
+        budgetAllotments
+      }, () => this.createCurrentBudget())
 
-      //construct currentBudget
 
-      const createCurrentBudget = () => {
-          const currentBudget = this.state.categories.map(cat => {
-            const matchedExpensesForCat = this.state.expenses.filter(exp => exp.category_id === cat.category_id)
-            const matchedBudgetAllocationForCat = this.state.expenses.find(alloc => alloc.category_id === cat.category_id) 
-              cat.amountSpent = matchedExpensesForCat.reduce((a,b) => a + b.amount)
-              cat.amountBudgeted = matchedBudgetAllocationForCat.amount
-          })
-          this.setState({currentBudget})
-      }
 
-      //or 
+        //or 
 
-      //update query to get all expenses for current month by cat, totaled, returning that + id = amountSpent
+        //update query to get all expenses for current month by cat, totaled, returning that + id = amountSpent
 
-      //SELECT (expenses.amount, categories.id, categories.category_name) FROM expenses JOIN categories ON expenses.category_id = categories.id WHERE expenses.category_id = ${}  
+        //SELECT (expenses.amount, categories.id, categories.category_name) FROM expenses JOIN categories ON expenses.category_id = categories.id WHERE expenses.category_id = ${}  
 
-      //then sum amount spent for each cat
-    
-      //then, SELECT * FROM "budget-allotments" WHERE category_id = get all budgets, also find the current one and update currentBudget in state w/ its cats
-  
-      })
+        //then sum amount spent for each cat
 
+        //then, SELECT * FROM "budget-allotments" WHERE category_id = get all budgets, also find the current one and update currentBudget in state w/ its cats
+      )
   }
 
   handleEnterCategory = newCategoryEntry => {
@@ -167,35 +179,35 @@ class App extends Component {
   }
 
 
-  updateBudgetWithExpenses = newExpense => {
-    const currentCats = this.state.currentBudget.categories
+  // updateBudgetWithExpenses = newExpense => {
+  //   const currentCats = this.state.currentBudget.categories
 
-    const catToChange = currentCats.find(
-      cat => cat.category_id === newExpense.category_id
-    )
-    const restOfCats = currentCats.filter(
-      cat => cat.category_id !== newExpense.category_id
-    )
+  //   const catToChange = currentCats.find(
+  //     cat => cat.category_id === newExpense.category_id
+  //   )
+  //   const restOfCats = currentCats.filter(
+  //     cat => cat.category_id !== newExpense.category_id
+  //   )
 
-    catToChange.amountSpent += newExpense.amount
+  //   catToChange.amountSpent += newExpense.amount
 
-    const updatedCats = [...restOfCats, catToChange]
+  //   const updatedCats = [...restOfCats, catToChange]
 
-    const { currentBudget } = this.state
-    currentBudget.categories = updatedCats.sort((a, b) => {
-      if (a.category_id < b.category_id) {
-        return -1;
-      }
-      if (a.category_id > b.category_id) {
-        return 1;
-      }
-      return 0;
-    })
+  //   const { currentBudget } = this.state
+  //   currentBudget.categories = updatedCats.sort((a, b) => {
+  //     if (a.category_id < b.category_id) {
+  //       return -1;
+  //     }
+  //     if (a.category_id > b.category_id) {
+  //       return 1;
+  //     }
+  //     return 0;
+  //   })
 
-    this.setState({
-      currentBudget
-    })
-  }
+  //   this.setState({
+  //     currentBudget
+  //   })
+  // }
 
   handleEnterCategoryAmount = (amount, id) => {
     console.log(this.state.currentBudget.categories)
@@ -222,34 +234,35 @@ class App extends Component {
     )
   }
 
-  updateBudgetWithCategoryAmount = category => {
-    const currentCats = this.state.currentBudget.categories
+  // updateBudgetWithCategoryAmount = category => {
+  //   const currentCats = this.state.currentBudget.categories
 
-    const catToChange = currentCats.find(cat => cat.category_id === category.id)
+  //   const catToChange = currentCats.find(cat => cat.category_id === category.id)
 
-    const restOfCats = currentCats.filter(
-      cat => cat.category_id !== category.id
-    )
-    catToChange.amountBudgeted = parseInt(category.amount)
-    const updatedCats = [...restOfCats, catToChange]
+  //   const restOfCats = currentCats.filter(
+  //     cat => cat.category_id !== category.id
+  //   )
+  //   catToChange.amountBudgeted = parseInt(category.amount)
+  //   const updatedCats = [...restOfCats, catToChange]
 
-    const { currentBudget } = this.state
-    currentBudget.categories = updatedCats.sort((a, b) => {
-      if (a.category_id < b.category_id) {
-        return -1;
-      }
-      if (a.category_id > b.category_id) {
-        return 1;
-      }
-      return 0;
-    })
+  //   const { currentBudget } = this.state
+  //   currentBudget.categories = updatedCats.sort((a, b) => {
+  //     if (a.category_id < b.category_id) {
+  //       return -1;
+  //     }
+  //     if (a.category_id > b.category_id) {
+  //       return 1;
+  //     }
+  //     return 0;
+  //   })
 
-    this.setState({
-      currentBudget
-    })
-  }
+  //   this.setState({
+  //     currentBudget
+  //   })
+  // }
 
   render() {
+    console.log(this.state.currentBudget)
     return (
       <div>
         <Router>
@@ -265,7 +278,7 @@ class App extends Component {
               path="/"
               render={() => (
                 <Budget
-                  budgetCategories={this.state.currentBudget.categories}
+                  budgetCategories={this.state.currentBudget}
                 />
               )}
             />
@@ -284,7 +297,7 @@ class App extends Component {
                   newExpenseDescription={this.state.newExpenseDescription}
                   newExpenseDate={this.state.newExpenseDate}
                   newExpenseCategory={this.state.newExpenseCategory}
-                  categories={this.state.currentBudget.categories}
+                  categories={this.state.currentBudget}
                 />
               )}
             />
@@ -295,7 +308,7 @@ class App extends Component {
                   enterCategory={this.handleEnterCategory}
                   submitCategory={this.handleSubmitCategory}
                   newCategoryEntry={this.state.newCategoryEntry}
-                  categories={this.state.currentBudget.categories}
+                  categories={this.state.currentBudget}
                   enterCategoryAmount={this.handleEnterCategoryAmount}
                   submitCategoryAmount={this.handleSubmitCategoryAmount}
                   newCategoryBudgetAmount={this.state.newCategoryBudgetAmount}

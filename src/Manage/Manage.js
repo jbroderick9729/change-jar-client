@@ -32,19 +32,10 @@ export default class Manage extends Component {
 
   render() {
     const { categories } = this.props
-    const sortedCategories = categories.sort((a, b) => {
-      if (a.category_id < b.category_id) {
-        return -1;
-      }
-      if (a.category_id > b.category_id) {
-        return 1;
-      }
-      return 0;
-    })
-    console.log(sortedCategories)
-    const categoriesList = sortedCategories.map((cat, i) => (
+
+    const categoriesList = categories.map(cat => (
       <BudgetCategory
-        key={i}
+        key={cat.id}
         enterCategoryAmount={this.props.enterCategoryAmount}
         submitCategoryAmount={this.props.submitCategoryAmount}
         newCategoryBudgetAmount={this.props.newCategoryBudgetAmount}
@@ -52,8 +43,8 @@ export default class Manage extends Component {
       />
     ))
 
-    const mapCatsAmountBudgeted = this.props.categories.map(cat => cat.amountBudgeted)
-    const budgeted = mapCatsAmountBudgeted.reduce((a, b) => a + b)
+    const initialValue = 0
+    const budgeted = categories.reduce((a, b) => a + b.amountBudgeted, initialValue)
 
     const left = this.state.income - budgeted
 
