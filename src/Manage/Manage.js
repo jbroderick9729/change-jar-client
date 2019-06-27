@@ -5,29 +5,14 @@ import './Manage.css'
 export default class Manage extends Component {
   static defaultProps = {
     categories: [],
-    enterCategoryAmount: () => { },
-    submitCategoryAmount: () => { }
+    enterCategoryAmount: () => {},
+    submitCategoryAmount: () => {}
   }
 
   state = {
     showEditIncomeButton: true,
     newIncome: '',
     income: 0
-  }
-
-  handleEnterIncome = newIncome => {
-    this.setState({
-      newIncome: parseInt(newIncome)
-    })
-  }
-
-  handleSubmitIncome = event => {
-    event.preventDefault()
-    this.setState({
-      income: this.state.newIncome,
-      newIncome: '',
-      showEditIncomeButton: !this.state.showEditIncomeButton
-    })
   }
 
   render() {
@@ -44,7 +29,10 @@ export default class Manage extends Component {
     ))
 
     const initialValue = 0
-    const budgeted = categories.reduce((a, b) => a + b.amountBudgeted, initialValue)
+    const budgeted = categories.reduce(
+      (a, b) => a + b.amountBudgeted,
+      initialValue
+    )
 
     const left = this.state.income - budgeted
 
@@ -56,11 +44,7 @@ export default class Manage extends Component {
           </header>
           <h3>Income</h3>
           <h4>This is how much money you make each month</h4>
-          {this.state.income === 0 ? null : (
-            <h3>${
-              this.state.income
-            }</h3>
-          )}
+          {this.state.income === 0 ? null : <h3>${this.state.income}</h3>}
 
           {this.state.showEditIncomeButton ? (
             <button
@@ -73,24 +57,26 @@ export default class Manage extends Component {
               {this.state.income === 0 ? `Enter Income` : `Edit Income`}
             </button>
           ) : (
-              <div>
-                <form onSubmit={e => this.handleSubmitIncome(e)}>
-                  <input
-                    type="text"
-                    onChange={e => this.handleEnterIncome(e.target.value)}
-                    value={this.state.newIncome}
-                    placeholder="Your monthly income"
-                  />
+            <div>
+              <form onSubmit={e => this.props.submitIncome(e)}>
+                <input
+                  type="text"
+                  onChange={e => this.props.enterIncome(e.target.value)}
+                  value={this.props.income}
+                  placeholder="Your monthly income"
+                />
 
-                  <button type="submit">Submit</button>
-                </form>
-              </div>
-            )}
+                <button type="submit">Submit</button>
+              </form>
+            </div>
+          )}
         </section>
         <hr />
         <section>
           <h3>Budget</h3>
-          {left > 0 && <h4>{`Manage your budget categories here. Currently, you've budgeted ${budgeted} of your monthly income and you have ${left} left to assign to your budget categories.`}</h4>}
+          {left > 0 && (
+            <h4>{`Manage your budget categories here. Currently, you've budgeted ${budgeted} of your monthly income and you have ${left} left to assign to your budget categories.`}</h4>
+          )}
           <table>
             <thead>
               <tr>
@@ -99,9 +85,7 @@ export default class Manage extends Component {
                 <th>Amount Budgeted</th>
               </tr>
             </thead>
-            <tbody>
-              {categoriesList}
-            </tbody>
+            <tbody>{categoriesList}</tbody>
           </table>
           <form onSubmit={e => this.props.submitCategory(e)}>
             <label>Enter a new category:</label>
@@ -113,7 +97,6 @@ export default class Manage extends Component {
             />
             <input type="submit" value="Enter" />
           </form>
-
         </section>
       </div>
     )

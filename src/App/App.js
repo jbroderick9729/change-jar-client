@@ -19,7 +19,8 @@ class App extends Component {
     budgetAllotments: [],
     newCategoryBudgetAmount: '',
     currentBudget: [],
-    categories: []
+    categories: [],
+    income: ''
   }
 
   handleUpdateCurrentBudget = currentBudget => {
@@ -32,12 +33,19 @@ class App extends Component {
     const currentBudget = this.state.categories.map(cat => {
       let newCat = { ...cat }
 
-      const matchedExpensesForCat = this.state.expenses.filter(exp => exp.category === cat.id)
+      const matchedExpensesForCat = this.state.expenses.filter(
+        exp => exp.category === cat.id
+      )
       const initialValue = 0
-      const totaledAmt = matchedExpensesForCat.reduce((a, b) => parseInt(a) + parseInt(b.amount), initialValue)
+      const totaledAmt = matchedExpensesForCat.reduce(
+        (a, b) => parseInt(a) + parseInt(b.amount),
+        initialValue
+      )
       newCat.amountSpent = totaledAmt
 
-      const matchedBudgetAllotmentForCat = this.state.budgetAllotments.find(allot => allot.category === cat.id)
+      const matchedBudgetAllotmentForCat = this.state.budgetAllotments.find(
+        allot => allot.category === cat.id
+      )
 
       if (!matchedBudgetAllotmentForCat) {
         newCat.amountBudgeted = 0
@@ -47,25 +55,6 @@ class App extends Component {
       return newCat
     })
     this.setState({ currentBudget })
-  }
-
-  componentDidMount() {
-    const expensesPromise = fetch(`${config.API_ENDPOINT}/expenses`)
-
-    const categoriesPromise = fetch(`${config.API_ENDPOINT}/categories`)
-
-    const budgetAllotmentsPromise = fetch(`${config.API_ENDPOINT}/budget-allotments`)
-
-    Promise.all([expensesPromise, categoriesPromise, budgetAllotmentsPromise])
-      .then(res => {
-        const responses = res.map(response => response.json())
-        return Promise.all(responses)
-      })
-      .then(([expenses, categories, budgetAllotments]) => this.setState({
-        expenses,
-        categories,
-        budgetAllotments
-      }, () => this.createCurrentBudget()))
   }
 
   handleEnterCategory = newCategoryEntry => {
@@ -78,19 +67,21 @@ class App extends Component {
     event.preventDefault()
 
     const body = {
-      category_name: this.state.newCategoryEntry,
+      category_name: this.state.newCategoryEntry
     }
     const options = {
       method: 'POST',
-      headers: { "content-type": 'application/json' },
+      headers: { 'content-type': 'application/json' },
       body: JSON.stringify(body)
     }
 
     fetch(`${config.API_ENDPOINT}/categories`, options)
       .then(res => res.json())
-      .then(cats => this.setState({
-        newCategoryEntry: ''
-      }))
+      .then(cats =>
+        this.setState({
+          newCategoryEntry: ''
+        })
+      )
       .catch(error => console.log(error))
   }
 
@@ -118,6 +109,7 @@ class App extends Component {
     })
   }
 
+  // need to createCurrentBudget again after setting state?
   handleSubmitExpense = event => {
     event.preventDefault()
     const body = {
@@ -128,18 +120,20 @@ class App extends Component {
     }
     const options = {
       method: 'POST',
-      headers: { "content-type": 'application/json' },
+      headers: { 'content-type': 'application/json' },
       body: JSON.stringify(body)
     }
     console.log(body)
     fetch(`${config.API_ENDPOINT}/expenses`, options)
       .then(res => res.json())
-      .then(expenses => this.setState({
-        newExpenseDescription: '',
-        newExpenseAmount: '',
-        newExpenseDate: new Date().toLocaleDateString(),
-        newExpenseCategory: '',
-      }))
+      .then(expenses =>
+        this.setState({
+          newExpenseDescription: '',
+          newExpenseAmount: '',
+          newExpenseDate: new Date().toLocaleDateString(),
+          newExpenseCategory: ''
+        })
+      )
       .catch(error => console.log(error))
   }
 
@@ -152,35 +146,85 @@ class App extends Component {
       newCategoryAmountEntry
     })
   }
-
+  // need to createCurrentBudget again after setting state?
   handleSubmitCategoryAmount = e => {
     e.preventDefault()
 
     const body = {
       id: this.state.newCategoryAmountEntry.id,
-      amountBudgeted: this.state.newCategoryAmountEntry.amountBudgeted,
+      amountBudgeted: this.state.newCategoryAmountEntry.amount
     }
     const options = {
       method: 'PATCH',
-      headers: { "content-type": 'application/json' },
+      headers: { 'content-type': 'application/json' },
       body: JSON.stringify(body)
     }
 
     fetch(`${config.API_ENDPOINT}/budget-allotments`, options)
       .then(res => res.json())
-      .then(allotments => this.setState({
-        newCategoryAmountEntry: ''
-      }))
+      .then(allotments =>
+        this.setState({
+          newCategoryAmountEntry: {}
+        })
+      )
       .catch(error => console.log(error))
+  }
 
+  handleEnterIncome = income => {
+    this.setState({
+      income
+    })
+  }
 
-    const catToChange = this.state.newCategoryAmountEntry
-    this.setState(
-      {
-        newCategoryAmountEntry: {}
-      },
-      () => this.updateBudgetWithCategoryAmount(catToChange)
+  handleSubmitIncome = event => {
+    event.preventDefault()
+
+    const body = {
+      income: this.state.income
+    }
+    const options = {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body)
+    }
+
+    fetch(`${config.API_ENDPOINT}/users`, options)
+      .then(res => res.json())
+      .then(cats =>
+        this.setState({
+          income: ''
+        })
+      )
+      .catch(error => console.log(error))
+  }
+
+  componentDidMount() {
+    const expensesPromise = fetch(`${config.API_ENDPOINT}/expenses`)
+
+    const categoriesPromise = fetch(`${config.API_ENDPOINT}/categories`)
+
+    const budgetAllotmentsPromise = fetch(
+      `${config.API_ENDPOINT}/budget-allotments`
     )
+
+    // const userId = ?from auth
+    // const userInfoPromise = fetch(`${config.API_ENDPOINT}/user/${userId}`)
+
+    Promise.all([expensesPromise, categoriesPromise, budgetAllotmentsPromise])
+      .then(res => {
+        const responses = res.map(response => response.json())
+        return Promise.all(responses)
+      })
+      .then(([expenses, categories, budgetAllotments]) =>
+        this.setState(
+          {
+            expenses,
+            categories,
+            budgetAllotments
+          },
+          () => this.createCurrentBudget()
+        )
+      )
   }
 
   render() {
@@ -198,9 +242,7 @@ class App extends Component {
               exact
               path="/"
               render={() => (
-                <Budget
-                  budgetCategories={this.state.currentBudget}
-                />
+                <Budget budgetCategories={this.state.currentBudget} />
               )}
             />
             <Route
@@ -233,6 +275,9 @@ class App extends Component {
                   enterCategoryAmount={this.handleEnterCategoryAmount}
                   submitCategoryAmount={this.handleSubmitCategoryAmount}
                   newCategoryBudgetAmount={this.state.newCategoryBudgetAmount}
+                  enterIncome={this.handleEnterIncome}
+                  submitIncome={this.handleSubmitIncome}
+                  income={this.state.income}
                 />
               )}
             />
