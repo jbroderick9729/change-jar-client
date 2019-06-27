@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
-import cuid from 'cuid'
 import './App.css'
 import Nav from '../Nav/Nav'
 import Manage from '../Manage/Manage'
@@ -15,7 +14,7 @@ class App extends Component {
     newExpenseDescription: '',
     newExpenseAmount: '',
     newExpenseDate: new Date().toLocaleDateString(),
-    newExpenseCategory: 'Mortgage',
+    newExpenseCategory: '1',
     expenses: [],
     budgetAllotments: [],
     newCategoryBudgetAmount: '',
@@ -23,18 +22,13 @@ class App extends Component {
     categories: []
   }
 
-  handleupdateCurrentBudget = currentBudget => {
-    console.log('handleupdateCurrentBudget ran')
-    console.log(currentBudget)
+  handleUpdateCurrentBudget = currentBudget => {
     this.setState({
       currentBudget
     })
   }
 
-
   createCurrentBudget = () => {
-    console.log('creatCurrentBudget ran')
-    console.log(this.state.expenses)
     const currentBudget = this.state.categories.map(cat => {
       let newCat = { ...cat }
 
@@ -71,20 +65,7 @@ class App extends Component {
         expenses,
         categories,
         budgetAllotments
-      }, () => this.createCurrentBudget())
-
-
-
-        //or 
-
-        //update query to get all expenses for current month by cat, totaled, returning that + id = amountSpent
-
-        //SELECT (expenses.amount, categories.id, categories.category_name) FROM expenses JOIN categories ON expenses.category_id = categories.id WHERE expenses.category_id = ${}  
-
-        //then sum amount spent for each cat
-
-        //then, SELECT * FROM "budget-allotments" WHERE category_id = get all budgets, also find the current one and update currentBudget in state w/ its cats
-      )
+      }, () => this.createCurrentBudget()))
   }
 
   handleEnterCategory = newCategoryEntry => {
@@ -95,34 +76,22 @@ class App extends Component {
 
   handleSubmitCategory = event => {
     event.preventDefault()
-    // const count = this.state.currentBudget.categories.length
-    // const category_id = count + 1
-    // const currentCats = this.state.currentBudget.categories
+
     const body = {
       category_name: this.state.newCategoryEntry,
     }
-    // const newCats = [...currentCats, newCat]
-    // const newBudget = { ...this.state.currentBudget }
-    // newBudget.categories = newCats.sort((a, b) => {
-    //   if (a.category_id < b.category_id) {
-    //     return -1;
-    //   }
-    //   if (a.category_id > b.category_id) {
-    //     return 1;
-    //   }
-    //   return 0;
-    // })
     const options = {
       method: 'POST',
-      "content-type": 'application/json',
+      headers: { "content-type": 'application/json' },
       body: JSON.stringify(body)
     }
+
     fetch(`${config.API_ENDPOINT}/categories`, options)
       .then(res => res.json())
-      .then(expenses => this.setState({
-        expenses,
+      .then(cats => this.setState({
         newCategoryEntry: ''
       }))
+      .catch(error => console.log(error))
   }
 
   handleEnterExpenseDate = newExpenseDate => {
@@ -151,66 +120,30 @@ class App extends Component {
 
   handleSubmitExpense = event => {
     event.preventDefault()
-    const cat = this.state.currentBudget.categories.find(
-      cat => cat.category_name === this.state.newExpenseCategory
-    )
-    const catId = cat.category_id
-
-    const expense_id = cuid()
-    const newExpense = {
-      expense_id,
+    const body = {
       date: this.state.newExpenseDate,
       description: this.state.newExpenseDescription,
       amount: this.state.newExpenseAmount,
-      category: this.state.newExpenseCategory,
-      category_id: catId,
-      created_at: Date.now(),
-      last_modified: Date.now()
+      category: this.state.newExpenseCategory
     }
-    this.setState(
-      {
-        expenses: [...this.state.expenses, newExpense],
-        newExpenseAmount: '',
+    const options = {
+      method: 'POST',
+      headers: { "content-type": 'application/json' },
+      body: JSON.stringify(body)
+    }
+    console.log(body)
+    fetch(`${config.API_ENDPOINT}/expenses`, options)
+      .then(res => res.json())
+      .then(expenses => this.setState({
         newExpenseDescription: '',
-        newExpenseDate: new Date().toLocaleDateString()
-      },
-      () => this.updateBudgetWithExpenses(newExpense)
-    )
+        newExpenseAmount: '',
+        newExpenseDate: new Date().toLocaleDateString(),
+        newExpenseCategory: '',
+      }))
+      .catch(error => console.log(error))
   }
 
-
-  // updateBudgetWithExpenses = newExpense => {
-  //   const currentCats = this.state.currentBudget.categories
-
-  //   const catToChange = currentCats.find(
-  //     cat => cat.category_id === newExpense.category_id
-  //   )
-  //   const restOfCats = currentCats.filter(
-  //     cat => cat.category_id !== newExpense.category_id
-  //   )
-
-  //   catToChange.amountSpent += newExpense.amount
-
-  //   const updatedCats = [...restOfCats, catToChange]
-
-  //   const { currentBudget } = this.state
-  //   currentBudget.categories = updatedCats.sort((a, b) => {
-  //     if (a.category_id < b.category_id) {
-  //       return -1;
-  //     }
-  //     if (a.category_id > b.category_id) {
-  //       return 1;
-  //     }
-  //     return 0;
-  //   })
-
-  //   this.setState({
-  //     currentBudget
-  //   })
-  // }
-
   handleEnterCategoryAmount = (amount, id) => {
-    console.log(this.state.currentBudget.categories)
     const newCategoryAmountEntry = {
       id,
       amount: parseInt(amount)
@@ -221,9 +154,25 @@ class App extends Component {
   }
 
   handleSubmitCategoryAmount = e => {
-    console.log(this.state.currentBudget.categories)
     e.preventDefault()
-    console.log('handleSubmitCategoryAmount ran')
+
+    const body = {
+      id: this.state.newCategoryAmountEntry.id,
+      amountBudgeted: this.state.newCategoryAmountEntry.amountBudgeted,
+    }
+    const options = {
+      method: 'PATCH',
+      headers: { "content-type": 'application/json' },
+      body: JSON.stringify(body)
+    }
+
+    fetch(`${config.API_ENDPOINT}/budget-allotments`, options)
+      .then(res => res.json())
+      .then(allotments => this.setState({
+        newCategoryAmountEntry: ''
+      }))
+      .catch(error => console.log(error))
+
 
     const catToChange = this.state.newCategoryAmountEntry
     this.setState(
@@ -234,35 +183,7 @@ class App extends Component {
     )
   }
 
-  // updateBudgetWithCategoryAmount = category => {
-  //   const currentCats = this.state.currentBudget.categories
-
-  //   const catToChange = currentCats.find(cat => cat.category_id === category.id)
-
-  //   const restOfCats = currentCats.filter(
-  //     cat => cat.category_id !== category.id
-  //   )
-  //   catToChange.amountBudgeted = parseInt(category.amount)
-  //   const updatedCats = [...restOfCats, catToChange]
-
-  //   const { currentBudget } = this.state
-  //   currentBudget.categories = updatedCats.sort((a, b) => {
-  //     if (a.category_id < b.category_id) {
-  //       return -1;
-  //     }
-  //     if (a.category_id > b.category_id) {
-  //       return 1;
-  //     }
-  //     return 0;
-  //   })
-
-  //   this.setState({
-  //     currentBudget
-  //   })
-  // }
-
   render() {
-    console.log(this.state.currentBudget)
     return (
       <div>
         <Router>
@@ -323,29 +244,3 @@ class App extends Component {
 }
 
 export default App
-
-
-// {
-//   category_id: 1,
-//   category_name: 'first',
-//   amountBudgeted: 0,
-//   amountSpent: 0
-// },
-// {
-//   category_id: 3,
-//   category_name: 'third',
-//   amountBudgeted: 0,
-//   amountSpent: 0
-// },
-// {
-//   category_id: 4,
-//   category_name: 'fourth',
-//   amountBudgeted: 0,
-//   amountSpent: 0
-// },
-// {
-//   category_id: 2,
-//   category_name: 'second',
-//   amountBudgeted: 0,
-//   amountSpent: 0
-// }

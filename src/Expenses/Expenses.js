@@ -9,11 +9,11 @@ export default class Expenses extends Component {
 
   render() {
     const expenseItems = this.props.expenses.map(expense => (
-      <tr key={expense.expense_id}>
+      <tr key={expense.id}>
         <td>{expense.date}</td>
         <td>{expense.amount}</td>
         <td>{expense.description}</td>
-        <td>{expense.category}</td>
+        <td>{expense.category_name}</td>
       </tr>
     ))
     return (
@@ -62,9 +62,9 @@ export default class Expenses extends Component {
                 <option value='blank'>Choose a category...</option>
                 {this.props.categories.map(cat => (
                   <option
-                    key={cat.category_id}
-                    value={cat.category_name}
-                    id={cat.category_id}
+                    key={cat.id}
+                    value={cat.id}
+                    id={cat.id}
                   >
                     {cat.category_name}
                   </option>

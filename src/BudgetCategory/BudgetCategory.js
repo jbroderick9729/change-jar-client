@@ -6,7 +6,6 @@ export default class BudgetCategory extends Component {
   }
 
   toggleEditMode = () => {
-    console.log('toggleEditMode ran')
     this.setState({ editMode: !this.state.editMode })
   }
 

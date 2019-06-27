@@ -3,8 +3,6 @@ import './Budget.css'
 
 const rowColor = (amtBudgeted, amtSpent) => {
   const percent = ((amtBudgeted - amtSpent) / amtBudgeted) * 100
-  console.log(amtSpent)
-  console.log(amtBudgeted)
   if (amtSpent === 0) {
     return 'green'
   }
@@ -19,7 +17,6 @@ const rowColor = (amtBudgeted, amtSpent) => {
 }
 
 function Budget(props) {
-  console.log(props.budgetCategories)
   return (
     <div>
       <h3>Budget</h3>
