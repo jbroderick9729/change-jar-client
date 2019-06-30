@@ -8,11 +8,11 @@ const rowColor = (amtBudgeted, amtSpent) => {
   }
 
   if (percent > 90 && percent < 80) {
-    return 'green'
+    return 'red'
   } else if (percent <= 10 && percent > 0) {
     return 'orange'
   } else {
-    return 'red'
+    return 'green'
   }
 }
 

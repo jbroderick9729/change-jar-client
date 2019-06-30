@@ -5,7 +5,11 @@ import Nav from '../Nav/Nav'
 import Manage from '../Manage/Manage'
 import Expenses from '../Expenses/Expenses'
 import Budget from '../Budget/Budget'
+import Register from '../Register/Register'
+import Login from '../Login/Login'
 import config from '../config'
+// import AuthApiService from '../Auth/AuthApiService';
+import TokenService from '../Auth/TokenService'
 
 class App extends Component {
   state = {
@@ -20,20 +24,16 @@ class App extends Component {
     newCategoryBudgetAmount: '',
     currentBudget: [],
     categories: [],
-    income: ''
+    income: '',
+    user: {},
   }
 
-  handleUpdateCurrentBudget = currentBudget => {
-    this.setState({
-      currentBudget
-    })
-  }
+  createCurrentBudget = (expenses, categories, budgetAllotments, user) => {
 
-  createCurrentBudget = () => {
-    const currentBudget = this.state.categories.map(cat => {
+    const currentBudget = categories.map(cat => {
       let newCat = { ...cat }
 
-      const matchedExpensesForCat = this.state.expenses.filter(
+      const matchedExpensesForCat = expenses.filter(
         exp => exp.category === cat.id
       )
       const initialValue = 0
@@ -43,7 +43,7 @@ class App extends Component {
       )
       newCat.amountSpent = totaledAmt
 
-      const matchedBudgetAllotmentForCat = this.state.budgetAllotments.find(
+      const matchedBudgetAllotmentForCat = budgetAllotments.find(
         allot => allot.category === cat.id
       )
 
@@ -54,9 +54,10 @@ class App extends Component {
 
       return newCat
     })
-    this.setState({ currentBudget })
+    this.setState({ currentBudget, expenses, categories, budgetAllotments, user: user[0] })
   }
 
+  // ---- new category form ----
   handleEnterCategory = newCategoryEntry => {
     this.setState({
       newCategoryEntry
@@ -71,7 +72,10 @@ class App extends Component {
     }
     const options = {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: {
+        'content-type': 'application/json',
+        'authorization': `bearer ${TokenService.getAuthToken()}`
+      },
       body: JSON.stringify(body)
     }
 
@@ -85,6 +89,7 @@ class App extends Component {
       .catch(error => console.log(error))
   }
 
+  // ---- new expense form ----
   handleEnterExpenseDate = newExpenseDate => {
     this.setState({
       newExpenseDate
@@ -120,10 +125,12 @@ class App extends Component {
     }
     const options = {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: {
+        'content-type': 'application/json',
+        'authorization': `bearer ${TokenService.getAuthToken()}`
+      },
       body: JSON.stringify(body)
     }
-    console.log(body)
     fetch(`${config.API_ENDPOINT}/expenses`, options)
       .then(res => res.json())
       .then(expenses =>
@@ -137,10 +144,11 @@ class App extends Component {
       .catch(error => console.log(error))
   }
 
+  // ---- new budget allocation form ----
   handleEnterCategoryAmount = (amount, id) => {
     const newCategoryAmountEntry = {
       id,
-      amount: parseInt(amount)
+      amount
     }
     this.setState({
       newCategoryAmountEntry
@@ -151,15 +159,20 @@ class App extends Component {
     e.preventDefault()
 
     const body = {
-      id: this.state.newCategoryAmountEntry.id,
-      amountBudgeted: this.state.newCategoryAmountEntry.amount
-    }
-    const options = {
-      method: 'PATCH',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(body)
+      category: this.state.newCategoryAmountEntry.id,
+      amount: this.state.newCategoryAmountEntry.amount
     }
 
+    console.log(body)
+    const options = {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'authorization': `bearer ${TokenService.getAuthToken()}`
+      },
+      body: JSON.stringify(body)
+    }
+    console.log(options)
     fetch(`${config.API_ENDPOINT}/budget-allotments`, options)
       .then(res => res.json())
       .then(allotments =>
@@ -170,6 +183,7 @@ class App extends Component {
       .catch(error => console.log(error))
   }
 
+  // ---- updated user form (currently only entering or updating income) ----
   handleEnterIncome = income => {
     this.setState({
       income
@@ -178,13 +192,15 @@ class App extends Component {
 
   handleSubmitIncome = event => {
     event.preventDefault()
-
     const body = {
       income: this.state.income
     }
     const options = {
       method: 'PATCH',
-      headers: { 'content-type': 'application/json' },
+      headers: {
+        'content-type': 'application/json',
+        'authorization': `bearer ${TokenService.getAuthToken()}`
+      },
       body: JSON.stringify(body)
     }
 
@@ -199,32 +215,17 @@ class App extends Component {
   }
 
   componentDidMount() {
-    const expensesPromise = fetch(`${config.API_ENDPOINT}/expenses`)
 
-    const categoriesPromise = fetch(`${config.API_ENDPOINT}/categories`)
+    // // make the below into a func. call it upon did mount with this caveat but also trigger manually on login success
+    // console.log('tf in cDM', window.localStorage.getItem('chargejar-client-auth-token'))
 
-    const budgetAllotmentsPromise = fetch(
-      `${config.API_ENDPOINT}/budget-allotments`
-    )
+    // if (window.localStorage.getItem('chargejar-client-auth-token')) ? this.handleFetchUsersData() : null
 
-    // const userId = ?from auth
-    // const userInfoPromise = fetch(`${config.API_ENDPOINT}/user/${userId}`)
 
-    Promise.all([expensesPromise, categoriesPromise, budgetAllotmentsPromise])
-      .then(res => {
-        const responses = res.map(response => response.json())
-        return Promise.all(responses)
-      })
-      .then(([expenses, categories, budgetAllotments]) =>
-        this.setState(
-          {
-            expenses,
-            categories,
-            budgetAllotments
-          },
-          () => this.createCurrentBudget()
-        )
-      )
+    // // const userId = ?from auth
+    // // const userInfoPromise = fetch(`${config.API_ENDPOINT}/user/${userId}`)
+
+
   }
 
   render() {
@@ -261,6 +262,7 @@ class App extends Component {
                   newExpenseDate={this.state.newExpenseDate}
                   newExpenseCategory={this.state.newExpenseCategory}
                   categories={this.state.currentBudget}
+                  createCurrentBudget={this.createCurrentBudget}
                 />
               )}
             />
@@ -278,8 +280,32 @@ class App extends Component {
                   enterIncome={this.handleEnterIncome}
                   submitIncome={this.handleSubmitIncome}
                   income={this.state.income}
+                  user={this.state.user}
+                  createCurrentBudget={this.createCurrentBudget}
                 />
               )}
+            />
+            <Route
+              path="/register"
+              render={({ history }) => (
+                <Register
+                  enterFirstName={this.handleEnterFirstName}
+                  enterLastName={this.handleEnterLastName}
+                  enterUsername={this.handleEnterUsername}
+                  enterPassword={this.handleEnterPassword}
+                  submitRegistration={this.handleSubmitRegistration}
+                  firstName={this.state.firstName}
+                  lastName={this.state.lastName}
+                  username={this.state.username}
+                  password={this.state.password}
+                  history={history}
+                />
+              )}
+            />
+            <Route
+              path="/login"
+              render={({ history }) => (
+                <Login history={history} />)}
             />
           </main>
         </Router>

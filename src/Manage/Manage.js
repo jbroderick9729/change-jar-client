@@ -1,12 +1,14 @@
 import React, { Component } from 'react'
 import BudgetCategory from '../BudgetCategory/BudgetCategory'
+import TokenService from '../Auth/TokenService'
+import config from '../config'
 import './Manage.css'
 
 export default class Manage extends Component {
   static defaultProps = {
     categories: [],
-    enterCategoryAmount: () => {},
-    submitCategoryAmount: () => {}
+    enterCategoryAmount: () => { },
+    submitCategoryAmount: () => { }
   }
 
   state = {
@@ -15,10 +17,33 @@ export default class Manage extends Component {
     income: 0
   }
 
-  render() {
-    const { categories } = this.props
+  componentDidMount() {
 
-    const categoriesList = categories.map(cat => (
+    const p1 = fetch(`${config.API_ENDPOINT}/expenses`, { headers: { 'Authorization': `bearer ${TokenService.getAuthToken()}` } })
+
+    const p2 = fetch(`${config.API_ENDPOINT}/categories`, { headers: { 'Authorization': `bearer ${TokenService.getAuthToken()}` } })
+
+    const p3 = fetch(
+      `${config.API_ENDPOINT}/budget-allotments`, { headers: { 'Authorization': `bearer ${TokenService.getAuthToken()}` } }
+    )
+
+    const p4 = fetch(
+      `${config.API_ENDPOINT}/users`, { headers: { 'Authorization': `bearer ${TokenService.getAuthToken()}` } }
+    )
+
+    Promise.all([p1, p2, p3, p4])
+      .then(res => {
+        const responses = res.map(response => response.json())
+        return Promise.all(responses)
+      })
+      .then(([expenses, categories, budgetAllotments, user]) => this.props.createCurrentBudget(expenses, categories, budgetAllotments, user))
+  }
+
+  render() {
+    const { categories, user } = this.props
+    const income = user.income
+    console.log(income)
+    const categoriesList = categories.length !== 0 ? categories.map(cat => (
       <BudgetCategory
         key={cat.id}
         enterCategoryAmount={this.props.enterCategoryAmount}
@@ -26,7 +51,7 @@ export default class Manage extends Component {
         newCategoryBudgetAmount={this.props.newCategoryBudgetAmount}
         {...cat}
       />
-    ))
+    )) : null
 
     const initialValue = 0
     const budgeted = categories.reduce(
@@ -34,7 +59,8 @@ export default class Manage extends Component {
       initialValue
     )
 
-    const left = this.state.income - budgeted
+
+    const left = income - budgeted
 
     return (
       <div>
@@ -44,7 +70,7 @@ export default class Manage extends Component {
           </header>
           <h3>Income</h3>
           <h4>This is how much money you make each month</h4>
-          {this.state.income === 0 ? null : <h3>${this.state.income}</h3>}
+          {income === 0 ? null : <h3>${income}</h3>}
 
           {this.state.showEditIncomeButton ? (
             <button
@@ -54,22 +80,21 @@ export default class Manage extends Component {
                 })
               }}
             >
-              {this.state.income === 0 ? `Enter Income` : `Edit Income`}
+              {income === 0 ? `Enter Income` : `Edit Income`}
             </button>
           ) : (
-            <div>
-              <form onSubmit={e => this.props.submitIncome(e)}>
-                <input
-                  type="text"
-                  onChange={e => this.props.enterIncome(e.target.value)}
-                  value={this.props.income}
-                  placeholder="Your monthly income"
-                />
+              <div>
+                <form onSubmit={e => this.props.submitIncome(e)}>
+                  <input
+                    type="text"
+                    onChange={e => this.props.enterIncome(e.target.value)}
+                    placeholder="Your monthly income"
+                  />
 
-                <button type="submit">Submit</button>
-              </form>
-            </div>
-          )}
+                  <button type="submit">Submit</button>
+                </form>
+              </div>
+            )}
         </section>
         <hr />
         <section>

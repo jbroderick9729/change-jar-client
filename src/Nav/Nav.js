@@ -8,8 +8,6 @@ export default function Sidebar() {
     <nav>
       <Link to="/">Enter an expense</Link>
       <Link to="/manage-categories">Manage budget categories</Link>
-      <Link to='/'><button className='button'>Log in</button></Link>
-      <Link to='/'><button className='button'>Register</button></Link>
     </nav>
   )
 }

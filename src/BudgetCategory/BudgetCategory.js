@@ -27,7 +27,7 @@ export default class BudgetCategory extends Component {
                 onChange={e =>
                   this.props.enterCategoryAmount(
                     e.target.value,
-                    this.props.category_id
+                    this.props.id
                   )
                 }
               />
