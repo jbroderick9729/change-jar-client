@@ -30,7 +30,7 @@ class App extends Component {
 
   createCurrentBudget = (expenses, categories, budgetAllotments, user) => {
 
-    const currentBudget = categories.map(cat => {
+    const currentBudget = categories.length ? categories.map(cat => {
       let newCat = { ...cat }
 
       const matchedExpensesForCat = expenses.filter(
@@ -43,17 +43,20 @@ class App extends Component {
       )
       newCat.amountSpent = totaledAmt
 
-      const matchedBudgetAllotmentForCat = budgetAllotments.find(
+      const matchedBudgetAllotmentForCat = budgetAllotments.filter(
         allot => allot.category === cat.id
       )
 
-      if (!matchedBudgetAllotmentForCat) {
+      if (matchedBudgetAllotmentForCat.length === 0) {
         newCat.amountBudgeted = 0
-      } else
-        newCat.amountBudgeted = parseInt(matchedBudgetAllotmentForCat.amount)
+      } else {
+        matchedBudgetAllotmentForCat.sort((a, b) => a.id > b.id ? -1 : 1)
+        console.log(matchedBudgetAllotmentForCat[0])
+        newCat.amountBudgeted = matchedBudgetAllotmentForCat[0].amount
+      }
 
       return newCat
-    })
+    }) : null
     this.setState({ currentBudget, expenses, categories, budgetAllotments, user: user[0] })
   }
 
@@ -212,20 +215,6 @@ class App extends Component {
         })
       )
       .catch(error => console.log(error))
-  }
-
-  componentDidMount() {
-
-    // // make the below into a func. call it upon did mount with this caveat but also trigger manually on login success
-    // console.log('tf in cDM', window.localStorage.getItem('chargejar-client-auth-token'))
-
-    // if (window.localStorage.getItem('chargejar-client-auth-token')) ? this.handleFetchUsersData() : null
-
-
-    // // const userId = ?from auth
-    // // const userInfoPromise = fetch(`${config.API_ENDPOINT}/user/${userId}`)
-
-
   }
 
   render() {

@@ -9,6 +9,27 @@ export default class Expenses extends Component {
     categories: []
   }
 
+  expensesNotNullOrEmpty = () => {
+    if (this.props.expenses !== null) {
+      if (this.props.expenses.length !== 0) {
+        return true
+      }
+    } else {
+      return false
+    }
+  }
+
+  catsNotNullOrEmpty = () => {
+    if (this.props.categories !== null) {
+      if (this.props.categories.length !== 0) {
+        return true
+      }
+    } else {
+      return false
+    }
+  }
+
+
   componentDidMount() {
 
     const p1 = fetch(`${config.API_ENDPOINT}/expenses`, { headers: { 'Authorization': `bearer ${TokenService.getAuthToken()}` } })
@@ -34,19 +55,23 @@ export default class Expenses extends Component {
 
 
   render() {
-    const expenseItems = this.props.expenses.map(expense => (
-      <tr key={expense.id}>
-        <td>{expense.date}</td>
-        <td>{expense.amount}</td>
-        <td>{expense.description}</td>
-        <td>{expense.category_name}</td>
-      </tr>
-    ))
+    let expenseItems
+
+    expenseItems = !this.expensesNotNullOrEmpty() ?
+      this.props.expenses.map(expense => (
+        <tr key={expense.id}>
+          <td>{expense.date}</td>
+          <td>{expense.amount}</td>
+          <td>{expense.description}</td>
+          <td>{expense.category_name}</td>
+        </tr>
+      )) : null
+
     return (
       <section>
         <div>
-          <h2>Enter your expenses</h2>
-          <h3>Expenses you enter here will appear below and their amounts will be reflected in your monthly budget above</h3>
+          <h3>Enter an expense</h3>
+          <h4>Expenses will be tracked against your budget categories and will also be listed below.</h4>
           <form
             className="expense-form"
             onSubmit={e => this.props.submitExpense(e)}
@@ -57,6 +82,7 @@ export default class Expenses extends Component {
                 type="text"
                 onChange={e => this.props.enterExpenseDate(e.target.value)}
                 value={this.props.newExpenseDate}
+                disabled={!this.catsNotNullOrEmpty()}
               />
             </label>
             <label>
@@ -68,6 +94,7 @@ export default class Expenses extends Component {
                   this.props.enterExpenseDescription(e.target.value)
                 }
                 value={this.props.newExpenseDescription}
+                disabled={!this.catsNotNullOrEmpty()}
               />
             </label>
             <label>
@@ -77,6 +104,7 @@ export default class Expenses extends Component {
                 placeholder="$50.00"
                 onChange={e => this.props.enterExpenseAmount(e.target.value)}
                 value={this.props.newExpenseAmount}
+                disabled={!this.catsNotNullOrEmpty()}
               />
             </label>
             <label>
@@ -84,9 +112,10 @@ export default class Expenses extends Component {
               <select
                 name="categories"
                 onChange={e => this.props.selectExpenseCategory(e.target.value)}
+                disabled={!this.catsNotNullOrEmpty()}
               >
                 <option value='blank'>Choose a category...</option>
-                {this.props.categories.map(cat => (
+                {this.catsNotNullOrEmpty() && this.props.categories.map(cat => (
                   <option
                     key={cat.id}
                     value={cat.id}
@@ -97,11 +126,11 @@ export default class Expenses extends Component {
                 ))}
               </select>
             </label>
-            <button type="submit">Submit expense</button>
+            <button type="submit" disabled={!this.catsNotNullOrEmpty()}>Submit expense</button>
           </form>
           <hr />
           <h3>Your Expenses</h3>
-          {!!this.props.expenses.length &&
+          {this.expensesNotNullOrEmpty() ? <h6>No expenses ...</h6> :
             <table>
               <thead>
                 <tr>

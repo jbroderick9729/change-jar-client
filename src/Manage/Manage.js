@@ -17,6 +17,16 @@ export default class Manage extends Component {
     income: 0
   }
 
+  catsNotNullOrEmpty = () => {
+    if (this.props.categories !== null) {
+      if (this.props.categories.length !== 0) {
+        return true
+      }
+    } else {
+      return false
+    }
+  }
+
   componentDidMount() {
 
     const p1 = fetch(`${config.API_ENDPOINT}/expenses`, { headers: { 'Authorization': `bearer ${TokenService.getAuthToken()}` } })
@@ -41,27 +51,31 @@ export default class Manage extends Component {
 
   render() {
     const { categories, user } = this.props
-    const income = user.income
-    console.log(income)
-    const categoriesList = categories.length !== 0 ? categories.map(cat => (
-      <BudgetCategory
-        key={cat.id}
-        enterCategoryAmount={this.props.enterCategoryAmount}
-        submitCategoryAmount={this.props.submitCategoryAmount}
-        newCategoryBudgetAmount={this.props.newCategoryBudgetAmount}
-        {...cat}
-      />
-    )) : null
-
-    const initialValue = 0
-    const budgeted = categories.reduce(
-      (a, b) => a + b.amountBudgeted,
-      initialValue
-    )
+    const income = user ? user.income : null
+    let budgeted
+    let left
+    let categoriesList
 
 
-    const left = income - budgeted
+    if (this.catsNotNullOrEmpty()) {
+      categoriesList = categories.map(cat => (
+        <BudgetCategory
+          key={cat.id}
+          enterCategoryAmount={this.props.enterCategoryAmount}
+          submitCategoryAmount={this.props.submitCategoryAmount}
+          newCategoryBudgetAmount={this.props.newCategoryBudgetAmount}
+          {...cat}
+        />
+      ))
 
+      const initialValue = 0
+      budgeted = categories.reduce(
+        (a, b) => a + b.amountBudgeted,
+        initialValue
+      )
+      left = income - budgeted
+    }
+    console.log(this.catsNotNullOrEmpty())
     return (
       <div>
         <section>
@@ -69,8 +83,8 @@ export default class Manage extends Component {
             <h2>Manage your budget and income</h2>
           </header>
           <h3>Income</h3>
-          <h4>This is how much money you make each month</h4>
-          {income === 0 ? null : <h3>${income}</h3>}
+          <h4>This is how much money you make each month. Click the button below to enter or update your income.</h4>
+          {income === 0 ? null : <h3>{income}</h3>}
 
           {this.state.showEditIncomeButton ? (
             <button
@@ -80,7 +94,7 @@ export default class Manage extends Component {
                 })
               }}
             >
-              {income === 0 ? `Enter Income` : `Edit Income`}
+              Edit Income
             </button>
           ) : (
               <div>
@@ -99,19 +113,29 @@ export default class Manage extends Component {
         <hr />
         <section>
           <h3>Budget</h3>
-          {left > 0 && (
-            <h4>{`Manage your budget categories here. Currently, you've budgeted ${budgeted} of your monthly income and you have ${left} left to assign to your budget categories.`}</h4>
-          )}
-          <table>
-            <thead>
-              <tr>
-                <th>Category</th>
-                <th>Amount Spent</th>
-                <th>Amount Budgeted</th>
-              </tr>
-            </thead>
-            <tbody>{categoriesList}</tbody>
-          </table>
+
+          <h4>{`Manage your budget categories here.`}</h4>
+
+          {
+            this.catsNotNullOrEmpty()
+              ?
+              <h5>{`Currently, you've budgeted ${budgeted} of your monthly income and you have ${left} left to assign to your budget categories.`}
+              </h5>
+              :
+              <h5>Get started by entering a budget category below</h5>
+          }
+
+          {!!this.catsNotNullOrEmpty() &&
+            <table>
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th>Amount Spent</th>
+                  <th>Amount Budgeted</th>
+                </tr>
+              </thead>
+              <tbody>{categoriesList}</tbody>
+            </table>}
           <form onSubmit={e => this.props.submitCategory(e)}>
             <label>Enter a new category:</label>
             <input
