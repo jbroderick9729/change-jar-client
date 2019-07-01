@@ -27,6 +27,11 @@ export default class Manage extends Component {
     }
   }
 
+  formatDollarAmount = (num) => {
+    const amount = parseInt(num)
+    return amount.toFixed(2)
+  }
+
   componentDidMount() {
 
     const p1 = fetch(`${config.API_ENDPOINT}/expenses`, { headers: { 'Authorization': `bearer ${TokenService.getAuthToken()}` } })
@@ -70,21 +75,32 @@ export default class Manage extends Component {
 
       const initialValue = 0
       budgeted = categories.reduce(
-        (a, b) => a + b.amountBudgeted,
+        (a, b) => parseInt(a) + parseInt(b.amountBudgeted),
         initialValue
       )
       left = income - budgeted
     }
-    console.log(this.catsNotNullOrEmpty())
+
+    let phrase
+
+    if (left > 0) {
+      phrase = ` and you have ${left} left of your monthly income to assign to your budget categories.`
+    } else if (left < 0) {
+      phrase = `, which is ${left * -1} more than your income this month.`
+    } else {
+      phrase = `, which is all of you montly income.`
+    }
+
+
+    console.log(income)
     return (
-      <div>
+
+      < div >
         <section>
-          <header>
-            <h2>Manage your budget and income</h2>
-          </header>
-          <h3>Income</h3>
-          <h4>This is how much money you make each month. Click the button below to enter or update your income.</h4>
-          {income === 0 ? null : <h3>{income}</h3>}
+
+          <h4>Income</h4>
+          <h5>This is how much money you make each month. Click the button below to enter or update your income.</h5>
+          {income && <h3>${this.formatDollarAmount(income)}</h3>}
 
           {this.state.showEditIncomeButton ? (
             <button
@@ -110,17 +126,17 @@ export default class Manage extends Component {
               </div>
             )}
         </section>
-        <hr />
+        <div className='divider'> - -- --- -- - $ - -- --- -- -</div>
         <section>
-          <h3>Budget</h3>
+          <h4>Budget</h4>
 
-          <h4>{`Manage your budget categories here.`}</h4>
+          <h5>{`Manage your budget categories here.`}</h5>
 
           {
             this.catsNotNullOrEmpty()
               ?
-              <h5>{`Currently, you've budgeted ${budgeted} of your monthly income and you have ${left} left to assign to your budget categories.`}
-              </h5>
+              <h6>{`Currently, you've budgeted ${budgeted}${phrase}`}
+              </h6>
               :
               <h5>Get started by entering a budget category below</h5>
           }
@@ -132,6 +148,7 @@ export default class Manage extends Component {
                   <th>Category</th>
                   <th>Amount Spent</th>
                   <th>Amount Budgeted</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>{categoriesList}</tbody>
@@ -147,7 +164,7 @@ export default class Manage extends Component {
             <input type="submit" value="Enter" />
           </form>
         </section>
-      </div>
+      </div >
     )
   }
 }

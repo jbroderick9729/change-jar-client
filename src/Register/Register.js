@@ -50,7 +50,7 @@ export default class Register extends Component {
       <div>
         <section>
           <header>
-            <h2>Register for an account</h2>
+            <h3>Register for an account</h3>
           </header>
         </section>
         <section>

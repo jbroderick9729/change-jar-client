@@ -1,15 +1,38 @@
 nav {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: flex-end;
+  align-items: flex-end;
   position: fixed;
+  width: 100%;
+  margin-left: -1rem;
+  top: 0;
+  right: 0;
+  background-color: black;
+  color: white;
+  padding-bottom: 0.5rem;
 }
 
-a {
+h1 {
+  display: inline-block;
+  font-size: 1.5rem;
   margin-right: 1rem;
 }
 
-.button {
-  margin-top: -1rem;
-  margin-bottom: 0.25rem;
+a {
+  margin-top: -0.5rem;
+  margin-right: 1rem;
+}
+
+.nav-links a:visited,
+.nav-links a:hover,
+.nav-links a:active,
+.nav-links a:link {
+  color: white;
+  text-decoration: none;
+}
+
+.nav-links a:hover {
+  font-weight: bold;
+  color: rgb(240, 240, 99);
 }

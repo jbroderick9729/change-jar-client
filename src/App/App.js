@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
+import { BrowserRouter as Router, Route } from 'react-router-dom'
 import './App.css'
 import Nav from '../Nav/Nav'
 import Manage from '../Manage/Manage'
@@ -222,11 +222,6 @@ class App extends Component {
       <div>
         <Router>
           <Nav />
-          <header>
-            <Link to="/">
-              <h1>Change Jar</h1>
-            </Link>
-          </header>
           <main>
             <Route
               exact

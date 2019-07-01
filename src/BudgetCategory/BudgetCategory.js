@@ -9,12 +9,17 @@ export default class BudgetCategory extends Component {
     this.setState({ editMode: !this.state.editMode })
   }
 
+  formatDollarAmount = (num) => {
+    const amount = parseInt(num)
+    return amount.toFixed(2)
+  }
+
   render() {
     return (
       <tr key={this.props.id}>
         <td>{this.props.category_name}</td>
-        <td>{this.props.amountSpent}</td>
-        <td>{this.props.amountBudgeted}</td>
+        <td>${this.formatDollarAmount(this.props.amountSpent)}</td>
+        <td>${this.formatDollarAmount(this.props.amountBudgeted)}</td>
         {this.state.editMode ? (
           <td>
             <form onSubmit={e => {

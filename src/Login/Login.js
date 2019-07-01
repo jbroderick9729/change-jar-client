@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import AuthApiService from '../Auth/AuthApiService'
 import TokenService from '../Auth/TokenService'
+import './Login.css'
 
 export default class Login extends Component {
     state = {
@@ -47,7 +48,7 @@ export default class Login extends Component {
         const { error } = this.state
         return (
             <section>
-                <h2>Login</h2>
+                <h3>Log into Change Jar</h3>
                 <form
                     className='LoginForm'
                     onSubmit={this.handleSubmitJwtAuth}

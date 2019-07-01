@@ -29,6 +29,16 @@ export default class Expenses extends Component {
     }
   }
 
+  formatDate = (timestamp) => {
+    const date = new Date(timestamp)
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+  }
+
+  formatDollarAmount = (num) => {
+    const amount = parseInt(num)
+    return amount.toFixed(2)
+  }
+
 
   componentDidMount() {
 
@@ -57,11 +67,11 @@ export default class Expenses extends Component {
   render() {
     let expenseItems
 
-    expenseItems = !this.expensesNotNullOrEmpty() ?
+    expenseItems = this.expensesNotNullOrEmpty() ?
       this.props.expenses.map(expense => (
         <tr key={expense.id}>
-          <td>{expense.date}</td>
-          <td>{expense.amount}</td>
+          <td>{this.formatDate(expense.date)}</td>
+          <td>${this.formatDollarAmount(expense.amount)}</td>
           <td>{expense.description}</td>
           <td>{expense.category_name}</td>
         </tr>
@@ -69,9 +79,10 @@ export default class Expenses extends Component {
 
     return (
       <section>
+        <div className='divider'> - -- --- -- - $ - -- --- -- -</div>
         <div>
-          <h3>Enter an expense</h3>
-          <h4>Expenses will be tracked against your budget categories and will also be listed below.</h4>
+          <h4>Enter an expense</h4>
+          <h5>Expenses dated for this month will be tracked against your budget categories and will also be listed below.</h5>
           <form
             className="expense-form"
             onSubmit={e => this.props.submitExpense(e)}
@@ -86,7 +97,7 @@ export default class Expenses extends Component {
               />
             </label>
             <label>
-              Enter a new expense:
+              Expense description:
               <input
                 type="text"
                 placeholder="Clothes, dinner, movie, etc..."
@@ -128,22 +139,23 @@ export default class Expenses extends Component {
             </label>
             <button type="submit" disabled={!this.catsNotNullOrEmpty()}>Submit expense</button>
           </form>
-          <hr />
-          <h3>Your Expenses</h3>
-          {this.expensesNotNullOrEmpty() ? <h6>No expenses ...</h6> :
+          <div className='divider'> - -- --- -- - $ - -- --- -- -</div>
+          <h4>Your Expenses</h4>
+          {this.expensesNotNullOrEmpty() ?
             <table>
               <thead>
                 <tr>
                   <th>Date</th>
-                  <th>Amount</th>
-                  <th>Description</th>
-                  <th>Category</th>
+                  <th>Amount Spent</th>
+                  <th>Expense Description</th>
+                  <th>Budget Category</th>
                 </tr>
               </thead>
               <tbody>
                 {expenseItems}
               </tbody>
-            </table>}
+            </table>
+            : <h6>No expenses ...</h6>}
         </div>
       </section>
     )

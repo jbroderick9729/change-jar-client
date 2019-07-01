@@ -11,7 +11,7 @@ export default class Nav extends Component {
 
   signedIn() {
     return (
-      <div>
+      <div className="nav-links">
         <Link to="/">Enter an expense</Link>
         <Link to="/manage-categories">Manage budget categories</Link>
         <Link
@@ -25,7 +25,7 @@ export default class Nav extends Component {
 
   signedOut() {
     return (
-      <div>
+      <div className="nav-links">
         <Link
           to='/register'>
           Register
@@ -41,7 +41,10 @@ export default class Nav extends Component {
 
   render() {
     return (
-      <nav>
+      <nav className="nav-links">
+
+        <h1>Change Jar</h1>
+
         {TokenService.hasAuthToken()
           ? this.signedIn()
           : this.signedOut()}
