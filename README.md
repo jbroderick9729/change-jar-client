@@ -1,5 +1,7 @@
 # Change Jar
 
+![screenshot](https://github.com/jbroderick9729/change-jar-client/blob/master/changejar.png)
+
 Use Change Jar to plan your monthly budget, track your expenses, and make savings goals. 
 
 You can test it out by heading to https://change-jar.jbroderick9729.now.sh/register, registering, and logging in using those credentials.
