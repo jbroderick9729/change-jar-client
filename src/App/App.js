@@ -51,7 +51,6 @@ class App extends Component {
         newCat.amountBudgeted = 0
       } else {
         matchedBudgetAllotmentForCat.sort((a, b) => a.id > b.id ? -1 : 1)
-        console.log(matchedBudgetAllotmentForCat[0])
         newCat.amountBudgeted = matchedBudgetAllotmentForCat[0].amount
       }
 
@@ -166,7 +165,6 @@ class App extends Component {
       amount: this.state.newCategoryAmountEntry.amount
     }
 
-    console.log(body)
     const options = {
       method: 'POST',
       headers: {
@@ -175,7 +173,6 @@ class App extends Component {
       },
       body: JSON.stringify(body)
     }
-    console.log(options)
     fetch(`${config.API_ENDPOINT}/budget-allotments`, options)
       .then(res => res.json())
       .then(allotments =>

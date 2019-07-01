@@ -18,8 +18,6 @@ export default class Login extends Component {
 
     onLoginSuccess = () => {
         const { history } = this.props
-        console.log('handleLoginSuccess ran')
-        console.log(history)
         history.push('/manage-categories')
     }
 
@@ -27,13 +25,11 @@ export default class Login extends Component {
         ev.preventDefault()
         this.setState({ error: null })
         const { username, password } = ev.target
-        console.log(username.value)
         AuthApiService.postLogin({
             username: username.value,
             password: password.value,
         })
             .then(res => {
-                console.log(res.authToken)
                 username.value = ''
                 password.value = ''
                 TokenService.saveAuthToken(res.authToken)

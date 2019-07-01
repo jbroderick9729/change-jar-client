@@ -57,7 +57,6 @@ export default class Expenses extends Component {
     Promise.all([p1, p2, p3, p4])
       .then(res => {
         const responses = res.map(response => response.json())
-        console.log("promiseall")
         return Promise.all(responses)
       })
       .then(([expenses, categories, budgetAllotments, user]) => this.props.createCurrentBudget(expenses, categories, budgetAllotments, user))

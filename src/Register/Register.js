@@ -18,8 +18,6 @@ export default class Register extends Component {
   handleSubmitRegistration = ev => {
     ev.preventDefault()
     const { first_name, last_name, username, password } = ev.target
-    console.log(first_name.value)
-
 
     this.setState({ error: null })
     AuthApiService.postUser({
@@ -45,7 +43,6 @@ export default class Register extends Component {
     const { error } = this.state
 
     const { history } = this.props
-    console.log(history)
     return (
       <div>
         <section>

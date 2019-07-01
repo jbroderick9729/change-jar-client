@@ -91,13 +91,9 @@ export default class Manage extends Component {
       phrase = `, which is all of you montly income.`
     }
 
-
-    console.log(income)
     return (
-
       < div >
         <section>
-
           <h4>Income</h4>
           <h5>This is how much money you make each month. Click the button below to enter or update your income.</h5>
           {income && <h3>${this.formatDollarAmount(income)}</h3>}
