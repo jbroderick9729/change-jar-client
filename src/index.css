@@ -3,6 +3,7 @@ html {
   font-family: 'Neuton', serif;
   background-color: tan;
   padding: 2rem;
+  text-align: center;
 }
 
 h1,
@@ -13,7 +14,6 @@ h6 {
 }
 
 h1 {
-  text-align: center;
   font-size: 1rem;
 }
 
@@ -22,36 +22,33 @@ h2 {
 }
 
 h3 {
-  text-align: center;
-
   font-size: 3rem;
+  padding-top: 2rem;
 }
 
 h4 {
   font-size: 2.5rem;
+  padding-top: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 h5 {
+  margin-top: 1rem;
   font-size: 2rem;
-  text-align: center;
 }
 
 h6 {
   font-size: 1.5rem;
-  text-align: center;
 }
 
 .divider {
   font-size: 40px;
-  text-align: center;
   margin-top: -2rem;
   margin-bottom: -2rem;
 }
 
 label,
 input {
-  display: block;
-  margin-bottom: 0.5rem;
   font-size: 1.25rem;
 }
 
@@ -64,7 +61,6 @@ select {
   display: inline-block;
   padding: 0.25rem;
   width: 100%;
-  font-family: 'Neuton', serif;
   margin-top: 0.25rem;
 }
 
@@ -81,19 +77,18 @@ form {
 }
 
 button {
-  width: 62%;
-  margin: auto;
-  margin-top: 1rem;
+  width: 50%;
   padding: 0.6rem;
-  font-family: 'Merriweather', serif;
-  font-size: 0.75rem;
+  margin: auto;
+  margin-top: 1.75rem;
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
 }
 
 table {
   text-align: center;
   background-color: rgb(126, 89, 89);
   margin: auto;
-  font-size: 1rem;
 }
 
 table,
@@ -110,4 +105,24 @@ th {
 
 tr:nth-child(even) {
   background-color: rgb(160, 89, 89);
+}
+
+label {
+  margin-top: 2rem;
+}
+
+td button {
+  padding: 0;
+  width: 100%;
+  font-size: 0.75rem;
+  margin-top: -3rem;
+  background: transparent;
+  border-style: none;
+  margin-top: 2rem;
+}
+
+td input,
+td label {
+  font-size: 0.75rem;
+  margin-top: 1.5rem;
 }

@@ -42,7 +42,6 @@ export default class Register extends Component {
 
     const { error } = this.state
 
-    const { history } = this.props
     return (
       <div>
         <section>
