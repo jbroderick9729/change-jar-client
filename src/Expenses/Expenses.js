@@ -1,6 +1,4 @@
 import React, { Component } from 'react'
-import TokenService from '../Auth/TokenService'
-import config from '../config'
 import './Expenses.css'
 
 export default class Expenses extends Component {
@@ -41,25 +39,7 @@ export default class Expenses extends Component {
 
 
   componentDidMount() {
-
-    const p1 = fetch(`${config.API_ENDPOINT}/expenses`, { headers: { 'Authorization': `bearer ${TokenService.getAuthToken()}` } })
-
-    const p2 = fetch(`${config.API_ENDPOINT}/categories`, { headers: { 'Authorization': `bearer ${TokenService.getAuthToken()}` } })
-
-    const p3 = fetch(
-      `${config.API_ENDPOINT}/budget-allotments`, { headers: { 'Authorization': `bearer ${TokenService.getAuthToken()}` } }
-    )
-
-    const p4 = fetch(
-      `${config.API_ENDPOINT}/users`, { headers: { 'Authorization': `bearer ${TokenService.getAuthToken()}` } }
-    )
-
-    Promise.all([p1, p2, p3, p4])
-      .then(res => {
-        const responses = res.map(response => response.json())
-        return Promise.all(responses)
-      })
-      .then(([expenses, categories, budgetAllotments, user]) => this.props.createCurrentBudget(expenses, categories, budgetAllotments, user))
+    this.props.getAllData()
   }
 
 

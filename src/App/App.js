@@ -28,6 +28,24 @@ class App extends Component {
     user: {},
   }
 
+  getAllData = () => {
+    const p1 = fetch(`${config.API_ENDPOINT}/expenses`, { headers: { 'Authorization': `bearer ${TokenService.getAuthToken()}` } })
+    const p2 = fetch(`${config.API_ENDPOINT}/categories`, { headers: { 'Authorization': `bearer ${TokenService.getAuthToken()}` } })
+    const p3 = fetch(
+      `${config.API_ENDPOINT}/budget-allotments`, { headers: { 'Authorization': `bearer ${TokenService.getAuthToken()}` } }
+    )
+    const p4 = fetch(
+      `${config.API_ENDPOINT}/users`, { headers: { 'Authorization': `bearer ${TokenService.getAuthToken()}` } }
+    )
+
+    Promise.all([p1, p2, p3, p4])
+      .then(res => {
+        const responses = res.map(response => response.json())
+        return Promise.all(responses)
+      })
+      .then(([expenses, categories, budgetAllotments, user]) => this.createCurrentBudget(expenses, categories, budgetAllotments, user))
+  }
+
   createCurrentBudget = (expenses, categories, budgetAllotments, user) => {
 
     const currentBudget = categories.length ? categories.map(cat => {
@@ -82,12 +100,16 @@ class App extends Component {
     }
 
     fetch(`${config.API_ENDPOINT}/categories`, options)
-      .then(res => res.json())
-      .then(cats =>
-        this.setState({
+      .then(res => {
+        console.log(res)
+        return res.json()
+      })
+      .then(cats => {
+        console.log(cats)
+        return this.setState({
           newCategoryEntry: ''
-        })
-      )
+        }, this.getAllData())
+      })
       .catch(error => console.log(error))
   }
 
@@ -141,7 +163,7 @@ class App extends Component {
           newExpenseAmount: '',
           newExpenseDate: new Date().toLocaleDateString(),
           newExpenseCategory: ''
-        })
+        }, () => this.getAllData())
       )
       .catch(error => console.log(error))
   }
@@ -178,7 +200,7 @@ class App extends Component {
       .then(allotments =>
         this.setState({
           newCategoryAmountEntry: {}
-        })
+        }, () => this.getAllData())
       )
       .catch(error => console.log(error))
   }
@@ -209,7 +231,7 @@ class App extends Component {
       .then(cats =>
         this.setState({
           income: ''
-        })
+        }, () => this.getAllData())
       )
       .catch(error => console.log(error))
   }
@@ -243,7 +265,7 @@ class App extends Component {
                   newExpenseDate={this.state.newExpenseDate}
                   newExpenseCategory={this.state.newExpenseCategory}
                   categories={this.state.currentBudget}
-                  createCurrentBudget={this.createCurrentBudget}
+                  getAllData={this.getAllData}
                 />
               )}
             />
@@ -262,7 +284,7 @@ class App extends Component {
                   submitIncome={this.handleSubmitIncome}
                   income={this.state.income}
                   user={this.state.user}
-                  createCurrentBudget={this.createCurrentBudget}
+                  getAllData={this.getAllData}
                 />
               )}
             />
